@@ -3,7 +3,6 @@ package com.example.jogo1;
 import java.util.Random;
 import java.util.Scanner;
 
-
 public class Dados {
     protected int dado1 = 0, dado2 = 0, somaDados = 0;
     protected ModoJogo modoJogo;
@@ -38,11 +37,13 @@ public class Dados {
     }
 
     public void rolarDados(String tipoJogador) {
+
+
         switch (modoJogo) {
             case NORMAL:
                 int tentativas = 0;
                 do {
-                    // Rola os dados (valores de 1 a 6)
+
                     dado1 = random.nextInt(6) + 1;
                     dado2 = random.nextInt(6) + 1;
                     somaDados = dado1 + dado2;
@@ -56,18 +57,15 @@ public class Dados {
                     } else if (tipoJogador.equals("Azarado")) {
                         condicaoSatisfeita = (somaDados <= 6);
                     }
-                    // Verifica se os dados são iguais (exceto em DEBUG)
-                    boolean dadosIguais = (dado1 == dado2);
-                    boolean deveRolarNovamente = modoJogo != ModoJogo.DEBUG && dadosIguais;
 
-                    if (condicaoSatisfeita && !deveRolarNovamente) {
+                    if (condicaoSatisfeita) {
                         break;
                     }
                 } while (true);
                 break;
 
             case DEBUG:
-                // Implementação do modo debug
+
                 System.out.println("Modo DEBUG ativado. Insira os valores dos dados:");
                 dado1 = sc.nextInt();
                 dado2 = sc.nextInt();
@@ -78,6 +76,10 @@ public class Dados {
 
     public int getSomaDados() {
         return somaDados;
+    }
+
+    public boolean saoDadosIguais() {
+        return dado1 == dado2;
     }
 
     public void exibirDados() {

@@ -117,7 +117,7 @@ public class Main extends Application {
                 Color.SALMON, () -> System.exit(0));
 
         Button btnOpcoes = criarBotaoPadronizado("Opções", "src/imagens/options.png",
-                Color.GOLDENROD, this::exibirOpcoes);
+                Color.ORANGE, this::exibirOpcoes);
 
         HBox containerBotoes = new HBox(20, btnJogar, btnCreditos, btnOpcoes, btnSair);
         containerBotoes.setAlignment(Pos.CENTER);
@@ -136,7 +136,7 @@ public class Main extends Application {
         for (int i = 2; i <= 6; i++) {
             int numJogadores = i;
             Button btn = criarBotaoPadronizado(i + " jogadores", "src/imagens/player.png",
-                    Color.LIGHTBLUE, () -> {
+                    Color.DARKCYAN, () -> {
                         numeroJogadoresSelecionado = numJogadores;
                         mostrarFormularioJogador(1);
                     });
@@ -148,7 +148,7 @@ public class Main extends Application {
                 Color.GRAY, this::exibirMenuPrincipal);
 
         // Botão Debug
-        Button btnDebug = criarBotaoComIcone("Debug OFF", "src/imagens/debug.png", Color.GREEN);
+        Button btnDebug = criarBotaoComIcone("Debug OFF", "src/imagens/debug.png", Color.ORANGERED);
         btnDebug.setOnAction(criarAcaoComSom(() -> alternarModoDebug(btnDebug)));
 
         // Linha 1: 4 botões (2, 3, 4, 5 jogadores)
@@ -235,7 +235,6 @@ public class Main extends Application {
     private void processarFormulario(Stage stage, int indiceAtual, TextField campoNome, HBox seletorTipo) {
         String nome = campoNome.getText().trim();
 
-        // Modificação segura para obter o tipo selecionado
         String tipo = "Normal"; // valor padrão
         for (Node node : seletorTipo.getChildren()) {
             if (node instanceof RadioButton) {
@@ -263,12 +262,38 @@ public class Main extends Application {
         jogadores.add(jogador);
 
         if (indiceAtual < numeroJogadoresSelecionado) {
+            // Continua para o próximo jogador
             mostrarFormularioJogador(indiceAtual + 1);
         } else {
-            JogoTabuleiro jogo = new JogoTabuleiro(jogadores, dados.getModoJogo(), this, primaryStage);
-            jogo.start(stage); // Usando o stage passado como parâmetro
+            // Verifica se há pelo menos 2 tipos diferentes de jogadores
+            if (temTiposDiferentesSuficientes()) {
+                JogoTabuleiro jogo = new JogoTabuleiro(jogadores, dados.getModoJogo(), this, primaryStage);
+                jogo.start(stage);
+            } else {
+                // Remove o último jogador adicionado para corrigir
+                jogadores.remove(jogadores.size() - 1);
+                coresUsadas.remove(corSelecionadaAtual);
+
+                new Alert(Alert.AlertType.ERROR,
+                        "Selecione pelo menos 2 tipos diferentes de jogadores (Normal, Sortudo e/ou Azarado).\n" +
+                                "Atualmente todos os jogadores são do mesmo tipo: " + tipo)
+                        .show();
+            }
         }
         musica.tocarEfeito(AUDIO_CLIQUE);
+    }
+    private boolean temTiposDiferentesSuficientes() {
+
+        String primeiroTipo = jogadores.get(0).getTipoJogador();
+
+        // Verifica se existe algum jogador com tipo diferente
+        for (Jogador j : jogadores) {
+            if (!j.getTipoJogador().equals(primeiroTipo)) {
+                return true; // Encontrou um tipo diferente
+            }
+        }
+
+        return false; // Todos são do mesmo tipo
     }
 
     private HBox criarSeletorCores(ImageView visualizadorImagem) {
@@ -369,9 +394,9 @@ public class Main extends Application {
 
 
     private void exibirCreditos() {
-        Button btnDev1 = criarBotaoComIcone("Kaynan Santos", "src/imagens/code.png", Color.MEDIUMPURPLE);
+        Button btnDev1 = criarBotaoComIcone("KaynanSantos", "src/imagens/code.png", Color.PURPLE);
         Button btnDev2 = criarBotaoComIcone("Ana Beatriz", "src/imagens/code.png", Color.MEDIUMPURPLE);
-        Button btnDev3 = criarBotaoComIcone("Luis Felipe", "src/imagens/code.png", Color.MEDIUMPURPLE);
+        Button btnDev3 = criarBotaoComIcone("Luis Felipe", "src/imagens/code.png", Color.LIGHTPINK);
         Button btnVoltar = criarBotaoComIcone("Voltar", "src/imagens/back.png", Color.GRAY);
 
         btnVoltar.setOnAction(criarAcaoComSom(this::exibirMenuPrincipal));
@@ -401,11 +426,11 @@ public class Main extends Application {
         if (dados.getModoJogo() == Dados.ModoJogo.DEBUG) {
             dados.setModoJogo(Dados.ModoJogo.NORMAL);
             btnDebug.setText("Debug OFF");
-            btnDebug.setStyle("-fx-background-color: green; -fx-background-radius: 20;");
+            btnDebug.setStyle("-fx-background-color: orangered; -fx-background-radius: 20;");
         } else {
             dados.setModoJogo(Dados.ModoJogo.DEBUG);
             btnDebug.setText("Debug ON");
-            btnDebug.setStyle("-fx-background-color: red; -fx-background-radius: 20;");
+            btnDebug.setStyle("-fx-background-color: green; -fx-background-radius: 20;");
         }
     }
 

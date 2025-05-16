@@ -25,6 +25,7 @@ public class JogoTabuleiro {
     // Constantes para áudios
     private static final String AUDIO_CONFIRM = "src/audios/confirm.mp3";
     private static final String AUDIO_CLIQUE = "src/audios/clique.mp3";
+    private static final String AUDIO_APLAUSOS = "src/audios/aplausos.mp3";
 
     // Componentes do jogo
     private final Dados.ModoJogo modoJogo;
@@ -345,37 +346,84 @@ public class JogoTabuleiro {
 
         if (jogador.getPosicaoAtual() >= 39) {
             Platform.runLater(() -> {
-                musica.parar();  // Para a música do jogo
+                musica.parar();
+                musica.tocarEfeito(AUDIO_APLAUSOS);
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Vitória!");
-                alert.setHeaderText("🏆 " + jogador.getNomeJogador() + " venceu!");
-                alert.setContentText("Clique para voltar ao menu");
+                Alert alertVitoria = new Alert(Alert.AlertType.INFORMATION);
+                alertVitoria.setTitle("Vitória!");
+                alertVitoria.setHeaderText("🏆 " + jogador.getNomeJogador() + " venceu!");
+                alertVitoria.setContentText("Clique para ver as estatísticas do jogo");
 
-                ButtonType btnMenu = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-                alert.getButtonTypes().setAll(btnMenu);
+                ButtonType btnContinuar = new ButtonType("Ver Estatísticas", ButtonBar.ButtonData.OK_DONE);
+                alertVitoria.getButtonTypes().setAll(btnContinuar);
 
-                alert.showAndWait().ifPresent(response -> {
-                    // Fecha a janela do jogo
-                    Stage stageAtual = (Stage) botaoJogar.getScene().getWindow();
-                    stageAtual.close();
-
-                    // Chama o método reiniciar da Main
-                    if (mainApp != null) {
-                        mainApp.ReiniciarJogo();
-                    }else {
-                        // Fallback caso mainApp não exista
-                        Main novoMain = new Main();
-                        novoMain.start(new Stage());
-                    }
+                alertVitoria.showAndWait().ifPresent(response -> {
+                    mostrarEstatisticasJogo(jogador);
                 });
             });
         } else {
             avancarJogador();
         }
     }
+    private void mostrarEstatisticasJogo(Jogador vencedor) {
+        // Cria o conteúdo das estatísticas
+        StringBuilder estatisticas = new StringBuilder();
+        estatisticas.append("RESUMO DO JOGO\n\n");
+        estatisticas.append("🏆 Vencedor: ").append(vencedor.getNomeJogador()).append("\n\n");
+        estatisticas.append("ESTATÍSTICAS DOS JOGADORES:\n");
+
+        for (Jogador jogador : jogadores) {
+            estatisticas.append("\n• ").append(jogador.getNomeJogador())
+                    .append(" (").append(jogador.getTipoJogador()).append("):\n")
+                    .append("   - Posição final: Casa ").append(jogador.getPosicaoAtual()).append("\n")
+                    .append("   - Total de casas andadas: ").append(jogador.casasAndadas).append("\n")
+                    .append("   - Cor: ").append(jogador.getCorHex()).append("\n");
+        }
+
+        Alert alertEstatisticas = new Alert(Alert.AlertType.INFORMATION);
+        alertEstatisticas.setTitle("Estatísticas do Jogo");
+        alertEstatisticas.setHeaderText("Desempenho de Todos os Jogadores");
+        alertEstatisticas.setContentText(estatisticas.toString());
+
+        // Adiciona área de texto para melhor visualização
+        TextArea textArea = new TextArea(estatisticas.toString());
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+        textArea.setPrefSize(400, 300);
+
+        alertEstatisticas.getDialogPane().setContent(textArea);
+
+        ButtonType btnMenu = new ButtonType("Voltar ao Menu", ButtonBar.ButtonData.OK_DONE);
+        alertEstatisticas.getButtonTypes().setAll(btnMenu);
+
+        // Ação ao fechar o alerta
+        alertEstatisticas.showAndWait().ifPresent(response -> {
+            // Fecha a janela do jogo
+            Stage stageAtual = (Stage) botaoJogar.getScene().getWindow();
+            stageAtual.close();
+
+            if (mainApp != null) {
+                mainApp.ReiniciarJogo();
+            }
+        });
+    }
 
     private void avancarJogador() {
+        Jogador jogadorAtual = jogadores.get(indiceJogadorAtual);
+
+        if (jogadorAtual.dados.saoDadosIguais()) {
+            Platform.runLater(() -> {
+                Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+                alerta.setTitle("Jogue Novamente!");
+                alerta.setHeaderText(null);
+                alerta.setContentText("Você tirou dois dados iguais! Que sorte! Jogue novamente.");
+                alerta.showAndWait();
+            });
+            // Não avança o jogador, apenas atualiza a interface
+            atualizarInformacoes();
+            return;
+        }
+
         indiceJogadorAtual = (indiceJogadorAtual + 1) % jogadores.size();
         atualizarInformacoes();
     }

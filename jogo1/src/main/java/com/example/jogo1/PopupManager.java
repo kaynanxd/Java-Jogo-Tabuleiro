@@ -76,18 +76,6 @@ public class PopupManager {
         dialogPane.setContentText(content);
         dialogPane.setMinSize(400, 250);
 
-        // Adiciona ícone se fornecido
-        if (iconPath != null) {
-            try {
-                ImageView icon = new ImageView(new Image(iconPath));
-                icon.setFitHeight(80);
-                icon.setFitWidth(80);
-                dialogPane.setGraphic(icon);
-            } catch (Exception e) {
-                System.err.println("Erro ao carregar ícone: " + e.getMessage());
-            }
-        }
-
         // Estilo CSS
         String css = """
             .dialog-pane {
