@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class JogoTabuleiro {
-    // Constantes para cores das casas
+
     private static final String COR_NORMAL = "#dbffd9";
     private static final String COR_SURPRESA = "#59ffff";
     private static final String COR_SORTE = "#FFFF00";
@@ -22,24 +22,21 @@ public class JogoTabuleiro {
     private static final String COR_VOLTAR_INICIO = "#ffb485";
     private static final String COR_MAGICA = "#8aa5ff";
 
-    // Constantes para áudios
     private static final String AUDIO_CONFIRM = "src/audios/confirm.mp3";
     private static final String AUDIO_CLIQUE = "src/audios/clique.mp3";
     private static final String AUDIO_APLAUSOS = "src/audios/aplausos.mp3";
 
-    // Componentes do jogo
-    private final Dados.ModoJogo modoJogo;
+    private final Dados.ModoJogo modoJogo;  //armazena se esta em debug ou nao
     private final Musica musica;
     private final List<Jogador> jogadores;
-    private final Tabuleiro tabuleiro;
-    private final GridPane grid = new GridPane();
-    private final StackPane[] casas = new StackPane[40];
-    private Main mainApp;
+    private final Tabuleiro tabuleiro;   //logica do tabuleiro
+    private final GridPane grid = new GridPane();    // Layout que organiza as casas do tabuleiro
+    private final StackPane[] casas = new StackPane[40]; // Array com todas as casas visuais
+    private Main mainApp; // Referência para a aplicação principal para reiniciar o jogo
 
     private int indiceJogadorAtual = 0;
-    private boolean jogoAtivo = true;
-    private Button botaoJogar;
-    private Label labelVez;
+    private Button botaoJogar; //botao para rolar os dados
+    private Label labelVez; //variavel para mostrar de quem e o turno
 
     public JogoTabuleiro(List<Jogador> jogadores, Dados.ModoJogo modoJogo, Main main, Stage primaryStage) {
         this.jogadores = jogadores;
@@ -49,17 +46,16 @@ public class JogoTabuleiro {
         this.mainApp = main;
 
         for (Jogador jogador : jogadores) {
-            jogador.tabuleiro = tabuleiro;
-            jogador.dados = new Dados(modoJogo);
+            jogador.tabuleiro = tabuleiro; // Associa o tabuleiro a cada jogador
+            jogador.dados = new Dados(modoJogo); // Cria um objeto Dados para cada jogador
         }
     }
 
-    public void start(Stage stage) {
+    public void start(Stage stage) {  //Inicia o jogo e configura a interface gráfica
         BorderPane root = new BorderPane();
         criarTabuleiroVisual();
-
         configurarInterfaceJogo(root);
-        configurarEventosJogo();
+        acaoCliqueBotaoDados();
 
         Scene scene = new Scene(root, 800, 700);
         stage.setScene(scene);
@@ -75,10 +71,10 @@ public class JogoTabuleiro {
         barraInferior.setAlignment(Pos.CENTER);
         barraInferior.setPadding(new Insets(15));
 
-        root.setBottom(barraInferior);
-        root.setCenter(grid);
+        root.setBottom(barraInferior); // Barra inferior com botão e label
+        root.setCenter(grid);  // Tabuleiro no centro
 
-        atualizarInformacoes();
+        atualizarTabuleiroVisual(); //atualiza as informacoes iniciais
     }
 
     private Button criarBotaoJogar() {
@@ -91,7 +87,7 @@ public class JogoTabuleiro {
             -fx-background-radius: 10;
         """);
 
-        // Efeito hover
+        // Efeito hover que aumenta o botao ao passar mouse
         botao.setOnMouseEntered(e -> {
             botao.setScaleX(1.1);
             botao.setScaleY(1.1);
@@ -106,7 +102,7 @@ public class JogoTabuleiro {
         return botao;
     }
 
-    private void configurarEventosJogo() {
+    private void acaoCliqueBotaoDados() {
         botaoJogar.setOnAction(e -> {
             musica.tocarEfeito(AUDIO_CONFIRM);
             realizarJogada();
@@ -114,32 +110,30 @@ public class JogoTabuleiro {
     }
 
     private void criarTabuleiroVisual() {
-        grid.setHgap(0);
+        grid.setHgap(0); //tira o espacamento entre os quadrados
         grid.setVgap(0);
         grid.setStyle("-fx-background-color: #b3f0ff; -fx-padding: 10;");
 
-        for (int i = 0; i < 40; i++) {
-            StackPane casa = criarCasaTabuleiro(i);
-            casas[i] = casa;
+        for (int i = 0; i < 40; i++) { //cria as 40 casas
+            StackPane casa = criarCasaTabuleiro(i); //cria uma casa individual
+            casas[i] = casa; //armazena no array de casas
 
-            int linha = (i / 10) * 2;
-            int coluna = (linha / 2 % 2 == 0) ? i % 10 : 9 - (i % 10);
+            int linha = (i / 10) * 2; //As linhas são multiplicadas por 2 para deixar espaço para os conectores e cada linha tem 10 casas
+            int coluna = (linha / 2 % 2 == 0) ? i % 10 : 9 - (i % 10); // Alterna direção para conseguir fazer caminho do percurso em S
 
-            grid.add(casa, coluna, linha);
+            grid.add(casa, coluna, linha); // adiciona a casa na posição calculada
 
-            if (i == 9 || i == 19 || i == 29) {
+            if (i == 9 || i == 19 || i == 29) { // Adiciona conectores nas viradas do tabuleiro,  inicio/fim de cada linha
                 adicionarConector(linha, coluna);
             }
         }
-
-        adicionarEspacadores();
     }
 
     private StackPane criarCasaTabuleiro(int numeroCasa) {
-        StackPane casa = new StackPane();
-        casa.setPrefSize(80, 80);
+        StackPane casa = new StackPane(); // Container que permite sobrepor elementos
+        casa.setPrefSize(80, 80); // Tamanho fixo para todas as casas
         casa.setStyle("-fx-border-color: black; -fx-background-color: " + obterCorCasa(numeroCasa) + ";");
-
+        //adiciona o numero dentro da casa
         Label numero = new Label(String.valueOf(numeroCasa));
         casa.getChildren().add(numero);
 
@@ -147,7 +141,7 @@ public class JogoTabuleiro {
     }
 
     private String obterCorCasa(int numeroCasa) {
-        return switch (numeroCasa) {
+        return switch (numeroCasa) {  //define a cor das casas especiais
             case 13 -> COR_SURPRESA;
             case 5, 15, 30 -> COR_SORTE;
             case 10, 25, 38 -> COR_PARALISIA;
@@ -157,7 +151,7 @@ public class JogoTabuleiro {
         };
     }
 
-    private void adicionarConector(int linha, int coluna) {
+    private void adicionarConector(int linha, int coluna) {   //adiciona a casa conector entre as linhas, a que tem a setinha
         StackPane conector = new StackPane();
         conector.setPrefSize(80, 80);
         conector.setStyle("-fx-background-color: " + COR_NORMAL + "; -fx-border-color: black;");
@@ -165,38 +159,36 @@ public class JogoTabuleiro {
         Label seta = new Label("↓");
         conector.getChildren().add(seta);
 
-        grid.add(conector, coluna, linha + 1);
-    }
-
-    private void adicionarEspacadores() {
-        for (int linha = 1; linha < 7; linha += 2) {
-            for (int col = 0; col < 10; col++) {
-                if (!deveTerConector(linha, col)) {
-                    Region espacador = new Region();
-                    espacador.setPrefSize(80, 80);
-                    grid.add(espacador, col, linha);
-                }
-            }
-        }
-    }
-
-    private boolean deveTerConector(int linha, int col) {
-        return ((linha - 1) % 4 == 0) && (col == 9 || col == 0);
+        grid.add(conector, coluna, linha + 1); // Adiciona o conector na linha seguinte à casa
     }
 
     private void atualizarTabuleiroVisual() {
-        for (int i = 0; i < 40; i++) {
+        Jogador atual = jogadores.get(indiceJogadorAtual);
+        labelVez.setText("🎯 Vez de: " + atual.getNomeJogador() + " ( " + atual.getTipoJogador() + ")");
+
+        String estilo = """
+        -fx-background-color: %s;
+        -fx-text-fill: black;
+        -fx-font-weight: bold;
+        -fx-font-size: 16px;
+        -fx-padding: 8 16;
+        -fx-background-radius: 10;
+        -fx-border-radius: 10;
+    """.formatted(atual.getCorHex());
+        labelVez.setStyle(estilo);
+
+        for (int i = 0; i < 40; i++) { //pecorre todas as casas
             StackPane casa = casas[i];
-            casa.getChildren().clear();
+            casa.getChildren().clear();  // Limpa o conteudo atual da casa
 
-            VBox conteudo = new VBox(2);
+            VBox conteudo = new VBox(2); // //criar uma caixa para o conteudo de dentro do quadrado
             conteudo.setStyle("-fx-alignment: center;");
-            conteudo.getChildren().add(new Label(String.valueOf(i)));
+            conteudo.getChildren().add(new Label(String.valueOf(i))); //adiciona o numero a casa
 
-            GridPane marcadores = criarMarcadoresJogadores(i);
+            GridPane marcadores = criarMarcadoresJogadores(i); // Adiciona os marcadores dos jogadores que estão nesta casa
             conteudo.getChildren().add(marcadores);
 
-            casa.getChildren().add(conteudo);
+            casa.getChildren().add(conteudo); //adiciona o novo conteudo definitivamente a casa
         }
     }
 
@@ -204,13 +196,13 @@ public class JogoTabuleiro {
         GridPane marcadores = new GridPane();
         marcadores.setHgap(2);
         marcadores.setVgap(2);
-        marcadores.setAlignment(Pos.CENTER);
+        marcadores.setAlignment(Pos.CENTER); //centraliza os marcadores
 
         int indice = 0;
-        for (Jogador jogador : jogadores) {
+        for (Jogador jogador : jogadores) { // Verifica quais jogadores estão nesta casa
             if (jogador.getPosicaoAtual() == numeroCasa) {
-                Label marcador = criarMarcadorJogador(jogador);
-                int col = indice % 3;
+                Label marcador = criarMarcadorJogador(jogador); // Cria um marcador para o jogador
+                int col = indice % 3; // Calcula posição dentro do quadrado (máximo 3 por linha para evitar esticamento do quadrado)
                 int row = indice / 3;
                 marcadores.add(marcador, col, row);
                 indice++;
@@ -221,7 +213,7 @@ public class JogoTabuleiro {
     }
 
     private Label criarMarcadorJogador(Jogador jogador) {
-        Label marcador = new Label(jogador.getNomeJogador().substring(0, 1).toUpperCase());
+        Label marcador = new Label(jogador.getNomeJogador().substring(0, 1).toUpperCase()); // Cria label com a primeira letra do nome em maisculo
         marcador.setStyle(
                 "-fx-background-color: " + jogador.getCorHex() + ";" +
                         "-fx-text-fill: black;" +
@@ -234,178 +226,32 @@ public class JogoTabuleiro {
         return marcador;
     }
 
-    private void atualizarInformacoes() {
-        if (jogoAtivo) {
-            Jogador atual = jogadores.get(indiceJogadorAtual);
-
-
-            labelVez.setText("🎯 Vez de: " + atual.getNomeJogador() +
-                    " ( " + atual.getTipoJogador() + ")");
-            aplicarEstiloJogadorAtual(atual);
-        } else {
-            labelVez.setText("🏁 Jogo finalizado");
-            aplicarEstiloFimJogo();
-        }
-
-        atualizarTabuleiroVisual();
-    }
-
-    private void aplicarEstiloJogadorAtual(Jogador jogador) {
-        String estilo = """
-            -fx-background-color: %s;
-            -fx-text-fill: black;
-            -fx-font-weight: bold;
-            -fx-font-size: 16px;
-            -fx-padding: 8 16;
-            -fx-background-radius: 10;
-            -fx-border-radius: 10;
-        """.formatted(jogador.getCorHex());
-
-        labelVez.setStyle(estilo);
-    }
-
-    private void aplicarEstiloFimJogo() {
-        labelVez.setStyle("""
-            -fx-background-color: gray;
-            -fx-text-fill: white;
-            -fx-font-weight: bold;
-            -fx-font-size: 16px;
-            -fx-padding: 8 16;
-            -fx-background-radius: 10;
-            -fx-border-radius: 10;
-        """);
-    }
-
     private void realizarJogada() {
-        if (!jogoAtivo) return;
 
-        Jogador jogadorAtual = jogadores.get(indiceJogadorAtual);
+        Jogador jogadorAtual = jogadores.get(indiceJogadorAtual);  // Obtem o jogador atual
 
-        if (jogadorAtual.rodadasParalisado > 0) {
+        if (jogadorAtual.rodadasParalisado > 0) { //verifica se o jogador esta paralisado e diminui 1
             jogadorAtual.setRodadasParaliso(jogadorAtual.rodadasParalisado - 1);
             mostrarMensagem(jogadorAtual.getNomeJogador() + " está paralisado e perde a rodada.");
-            avancarJogador();
+            avancarJogador(); //chama metodo para avancar para o proximo jogador
             return;
         }
 
-        if (modoJogo == Dados.ModoJogo.DEBUG) {
+        if (modoJogo == Dados.ModoJogo.DEBUG) { //se estiver no debug ele pede os valores dos dados
             obterValoresDadosDebug(jogadorAtual);
         } else {
-            jogadorAtual.dados.rolarDados(jogadorAtual.getTipoJogador());
+            jogadorAtual.dados.rolarDados(jogadorAtual.getTipoJogador()); //se estiver no modo normal e chamado rolar dados que esta na classe dados
         }
-
-        mostrarResultadoDados(jogadorAtual);
-        iniciarAnimacaoMovimento(jogadorAtual);
+        mostrarResultadoDados(jogadorAtual);  //chama metodo que mostra o resultado dos dados
+        iniciarAnimacaoMovimento(jogadorAtual); //chama animacao para fazer o toten do personagem pecorrer as casas
     }
 
-    private void obterValoresDadosDebug(Jogador jogador) {
-        String dado1 = PopupManager.showTextInputPopup("Modo Debug - Dado 1", "Digite o valor para o Dado 1", "1").orElse("1");
-        String dado2 = PopupManager.showTextInputPopup("Modo Debug - Dado 2", "Digite o valor para o Dado 2", "1").orElse("1");
-
-        try {
-            jogador.dados.dado1 = Integer.parseInt(dado1);
-            jogador.dados.dado2 = Integer.parseInt(dado2);
-            jogador.dados.somaDados = jogador.dados.dado1 + jogador.dados.dado2;
-        } catch (NumberFormatException e) {
-            PopupManager.showWarningPopup("Valor Inválido", "Digite apenas números inteiros! Usando valor padrão 1.");
-            jogador.dados.dado1 = 1;
-            jogador.dados.dado2 = 1;
-            jogador.dados.somaDados = 2;
-        }
-    }
-
-    private void mostrarResultadoDados(Jogador jogador) {
-        mostrarMensagem(jogador.getNomeJogador() + " rolou " + jogador.dados.getSomaDados() + " (" +
-                jogador.dados.dado1 + " + " + jogador.dados.dado2 + ")");
-    }
-
-    private void iniciarAnimacaoMovimento(Jogador jogador) {
-        int origem = jogador.getPosicaoAtual();
-        int destino = Math.min(origem + jogador.dados.getSomaDados(), 39);
-
-        Timeline animacao = new Timeline();
-        List<KeyFrame> movimentos = new ArrayList<>();
-
-        for (int i = origem + 1, passo = 1; i <= destino; i++, passo++) {
-            int posicao = i;
-            movimentos.add(new KeyFrame(Duration.seconds(passo * 0.3), e -> {
-                jogador.setPosicaoAtual(posicao);
-                atualizarInformacoes();
-                musica.tocarEfeito(AUDIO_CLIQUE);
-            }));
-        }
-
-        animacao.getKeyFrames().addAll(movimentos);
-        animacao.setOnFinished(e -> finalizarJogada(jogador, destino));
-        animacao.play();
-    }
-
-    private void finalizarJogada(Jogador jogador, int destino) {
-        jogador.casasAndadas += jogador.dados.getSomaDados();
-        tabuleiro.verificarCasaEspecial(jogador);
-
-        if (jogador.getPosicaoAtual() >= 39) {
-            Platform.runLater(() -> {
-                musica.parar();
-                musica.tocarEfeito(AUDIO_APLAUSOS);
-
-                Alert alertVitoria = new Alert(Alert.AlertType.INFORMATION);
-                alertVitoria.setTitle("Vitória!");
-                alertVitoria.setHeaderText("🏆 " + jogador.getNomeJogador() + " venceu!");
-                alertVitoria.setContentText("Clique para ver as estatísticas do jogo");
-
-                ButtonType btnContinuar = new ButtonType("Ver Estatísticas", ButtonBar.ButtonData.OK_DONE);
-                alertVitoria.getButtonTypes().setAll(btnContinuar);
-
-                alertVitoria.showAndWait().ifPresent(response -> {
-                    mostrarEstatisticasJogo(jogador);
-                });
-            });
-        } else {
-            avancarJogador();
-        }
-    }
-    private void mostrarEstatisticasJogo(Jogador vencedor) {
-        // Cria o conteúdo das estatísticas
-        StringBuilder estatisticas = new StringBuilder();
-        estatisticas.append("RESUMO DO JOGO\n\n");
-        estatisticas.append("🏆 Vencedor: ").append(vencedor.getNomeJogador()).append("\n\n");
-        estatisticas.append("ESTATÍSTICAS DOS JOGADORES:\n");
-
-        for (Jogador jogador : jogadores) {
-            estatisticas.append("\n• ").append(jogador.getNomeJogador())
-                    .append(" (").append(jogador.getTipoJogador()).append("):\n")
-                    .append("   - Posição final: Casa ").append(jogador.getPosicaoAtual()).append("\n")
-                    .append("   - Total de casas andadas: ").append(jogador.casasAndadas).append("\n")
-                    .append("   - Cor: ").append(jogador.getCorHex()).append("\n");
-        }
-
-        Alert alertEstatisticas = new Alert(Alert.AlertType.INFORMATION);
-        alertEstatisticas.setTitle("Estatísticas do Jogo");
-        alertEstatisticas.setHeaderText("Desempenho de Todos os Jogadores");
-        alertEstatisticas.setContentText(estatisticas.toString());
-
-        // Adiciona área de texto para melhor visualização
-        TextArea textArea = new TextArea(estatisticas.toString());
-        textArea.setEditable(false);
-        textArea.setWrapText(true);
-        textArea.setPrefSize(400, 300);
-
-        alertEstatisticas.getDialogPane().setContent(textArea);
-
-        ButtonType btnMenu = new ButtonType("Voltar ao Menu", ButtonBar.ButtonData.OK_DONE);
-        alertEstatisticas.getButtonTypes().setAll(btnMenu);
-
-        // Ação ao fechar o alerta
-        alertEstatisticas.showAndWait().ifPresent(response -> {
-            // Fecha a janela do jogo
-            Stage stageAtual = (Stage) botaoJogar.getScene().getWindow();
-            stageAtual.close();
-
-            if (mainApp != null) {
-                mainApp.ReiniciarJogo();
-            }
-        });
+    private void mostrarMensagem(String texto) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setContentText(texto);
+        alert.setHeaderText(null);
+        alert.setTitle("Mensagem");
+        alert.showAndWait();
     }
 
     private void avancarJogador() {
@@ -420,19 +266,117 @@ public class JogoTabuleiro {
                 alerta.showAndWait();
             });
             // Não avança o jogador, apenas atualiza a interface
-            atualizarInformacoes();
+            atualizarTabuleiroVisual();
             return;
         }
 
         indiceJogadorAtual = (indiceJogadorAtual + 1) % jogadores.size();
-        atualizarInformacoes();
+        atualizarTabuleiroVisual();
     }
 
-    private void mostrarMensagem(String texto) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setContentText(texto);
-        alert.setHeaderText(null);
-        alert.setTitle("Mensagem");
-        alert.showAndWait();
+    private void mostrarResultadoDados(Jogador jogador) {
+        mostrarMensagem(jogador.getNomeJogador() + " rolou " + jogador.dados.getSomaDados() + " (" + jogador.dados.dado1 + " + " + jogador.dados.dado2 + ")");
+    }
+
+    private void obterValoresDadosDebug(Jogador jogador) {
+        String dado1 = PopupManager.showTextInputPopup("Modo Debug - Dado 1", "Digite o valor para o Dado 1", "1").orElse("1");
+        String dado2 = PopupManager.showTextInputPopup("Modo Debug - Dado 2", "Digite o valor para o Dado 2", "1").orElse("1");
+
+        try {
+            jogador.dados.dado1 = Integer.parseInt(dado1);// converte para inteiros e armazena
+            jogador.dados.dado2 = Integer.parseInt(dado2);
+            jogador.dados.somaDados = jogador.dados.dado1 + jogador.dados.dado2;
+        } catch (NumberFormatException e) { //caso o usuario digite letras ira dar erro e sera setado um valor padrao de 2
+            PopupManager.showWarningPopup("Valor Inválido", "Digite apenas números inteiros!.");
+            jogador.dados.dado1 = 1;
+            jogador.dados.dado2 = 1;
+            jogador.dados.somaDados = 2;
+        }
+    }
+
+    private void iniciarAnimacaoMovimento(Jogador jogador) {
+        int origem = jogador.getPosicaoAtual(); //pega posicao atual
+        int destino = Math.min(origem + jogador.dados.getSomaDados(), 39); // calcula posicao final mas nao passa do final
+
+        Timeline animacao = new Timeline(); // Cria uma linha do tempo para a animação usando uma blibioteca do javafx
+        List<KeyFrame> movimentos = new ArrayList<>(); //cria uma lista para cada frame da animacao
+
+        for (int i = origem + 1, passo = 1; i <= destino; i++, passo++) { //loop q cria um Frame para cada casa que o jogador deve percorrer
+            int posicao = i;
+            movimentos.add(new KeyFrame(Duration.seconds(passo * 0.3), e -> { // Cria um frame que será executado após um tempo progressivo
+                jogador.setPosicaoAtual(posicao); // Atualiza posição
+                atualizarTabuleiroVisual(); // Atualiza interface
+                musica.tocarEfeito(AUDIO_CLIQUE); //adiciona efeito sonoro
+            }));
+        }
+        // Adiciona todos os frames a animacao, chama o metodo finalizar jogada e dar play
+        animacao.getKeyFrames().addAll(movimentos);
+        animacao.setOnFinished(e -> finalizarJogada(jogador, destino));
+        animacao.play();
+    }
+
+    private void finalizarJogada(Jogador jogador, int destino) {
+        jogador.casasAndadas += jogador.dados.getSomaDados(); // Atualiza contador de casas andadas
+        tabuleiro.verificarCasaEspecial(jogador); //usando o metodo da classe tabuleiro, verifica a casa especial
+
+        if (jogador.getPosicaoAtual() >= 39) { //caso um jogador venca, ira aparecer um popup e mostrar as estatisticas
+            Platform.runLater(() -> {
+                musica.parar();
+                musica.tocarEfeito(AUDIO_APLAUSOS);
+
+                Alert alertVitoria = new Alert(Alert.AlertType.INFORMATION);
+                alertVitoria.setTitle("Vitória!");
+                alertVitoria.setHeaderText("🏆 " + jogador.getNomeJogador() + " venceu!");
+                alertVitoria.setContentText("Clique para ver as estatísticas do jogo");
+
+                ButtonType btnContinuar = new ButtonType("Ver Estatísticas", ButtonBar.ButtonData.OK_DONE);
+                alertVitoria.getButtonTypes().setAll(btnContinuar);
+
+                alertVitoria.showAndWait().ifPresent(response -> {
+                    mostrarEstatisticasJogo(jogador); //chama o metodo q exibe o popup com todas estatisticas
+                });
+            });
+        } else {
+            avancarJogador(); //se o jogador nao venceu simplesmente avanca para o proximo jogador
+        }
+    }
+
+    private void mostrarEstatisticasJogo(Jogador vencedor) {
+
+        StringBuilder estatisticas = new StringBuilder();
+
+
+        estatisticas.append("RESUMO DO JOGO\n\n"); // Cabeçalho do relatório
+        estatisticas.append("🏆 Vencedor: ").append(vencedor.getNomeJogador()).append("\n\n");
+        estatisticas.append("ESTATÍSTICAS DOS JOGADORES:\n");
+
+
+        for (Jogador jogador : jogadores) {  // Loop através de todos os jogadores para pegar informacoes
+            estatisticas.append("\n• ").append(jogador.getNomeJogador())
+                    .append(" (").append(jogador.getTipoJogador()).append("):\n")
+                    .append("   - Posição final: Casa ").append(jogador.getPosicaoAtual()).append("\n")
+                    .append("   - Total de casas andadas: ").append(jogador.casasAndadas).append("\n")
+                    .append("   - Cor: ").append(jogador.getCorHex()).append("\n");
+        }
+
+        Alert alertEstatisticas = new Alert(Alert.AlertType.INFORMATION);  // Cria um diálogo de alerta para mostrar as estatísticas
+        alertEstatisticas.setTitle("Estatísticas do Jogo");
+        alertEstatisticas.setHeaderText("Desempenho de Todos os Jogadores");
+
+        TextArea textArea = new TextArea(estatisticas.toString()); // Cria uma área de texto para exibir as estatísticas
+        textArea.setEditable(false);  // Impede edição
+        textArea.setWrapText(true);   // Quebra de linha automática
+        textArea.setPrefSize(400, 300);  // Tamanho
+
+        alertEstatisticas.getDialogPane().setContent(textArea); // Substitui o conteúdo padrão do alerta pela TextArea
+
+        ButtonType btnMenu = new ButtonType("Voltar ao Menu", ButtonBar.ButtonData.OK_DONE);   // Cria botão para voltar ao menu
+        alertEstatisticas.getButtonTypes().setAll(btnMenu);  // Define como único botão
+
+        alertEstatisticas.showAndWait().ifPresent(response -> {   // Ação executada quando o diálogo é fechado
+            Stage stageAtual = (Stage) botaoJogar.getScene().getWindow(); // Obtém a janela atual através do botaoJogar
+            stageAtual.close();  // Fecha a janela do jogo
+            mainApp.ReiniciarJogo();   // reinicia o jogo
+        });
     }
 }
