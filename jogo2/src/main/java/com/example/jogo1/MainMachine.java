@@ -10,7 +10,8 @@ public class MainMachine extends BaseJogo {
     public MainMachine() {
         super();
     }
-    //metodos para funcionar no terminal
+
+    //Metodos Da Logica Do Jogo
     public void executarJogo(Scanner scanner) {
         System.out.print("\n=== Escolha a posição do alimento ===\n");
         System.out.print("Posição x: ");
@@ -53,8 +54,14 @@ public class MainMachine extends BaseJogo {
         if (robo2Achou && !robo1Achou) {
             System.out.println("Robo " + robos.get(1).getCor() + " encontrou o alimento!");
         }
+        for (int i = 0; i < robos.size(); i++) {
+            System.out.print(
+                    "\nRobô " + robos.get(i).getCor() + " - Movimentos válidos: " + robos.get(i).numMovimentosValidos +
+                            " | Movimentos inválidos: " + robos.get(i).numMovimentosInvalidos);
+
+        }
     }
-    //metodos para interface grafica
+    //Adaptacao Dos Metodos Para Funcioanr na interface
     public void executarJogo(String corRobo1,String corRobo2, int x, int y) {
         escolherPosAlimento(x, y);
 
@@ -85,9 +92,15 @@ public class MainMachine extends BaseJogo {
             }
         }
 
+        if(algumAchou==true){
+            for (int i = 0; i < robos.size(); i++) {
+                System.out.print(
+                        "\nRobô " + robos.get(i).getCor() + " - Movimentos válidos: " + robos.get(i).numMovimentosValidos +
+                                " | Movimentos inválidos: " + robos.get(i).numMovimentosInvalidos);
+            }
+        }
         return algumAchou;
     }
-
 
     public List<Robo> getRobos() {
         return robos;

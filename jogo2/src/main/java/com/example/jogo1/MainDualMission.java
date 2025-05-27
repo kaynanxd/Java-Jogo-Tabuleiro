@@ -8,7 +8,10 @@ public class MainDualMission extends BaseJogo {
     public MainDualMission() {
         super();
     }
-    //metodos para terminal
+
+    @Override
+
+    //Metodos Logica do jogo
     public void executarJogo(Scanner scanner) {
 
         Robo roboNormal = new Robo("Azul");
@@ -19,28 +22,25 @@ public class MainDualMission extends BaseJogo {
 
         System.out.print("\n=== Escolha a posição do alimento ===\n");
         System.out.print("Posição x: ");
-        int alimentoX = scanner.nextInt();
+        int x = scanner.nextInt();
         System.out.print("Posição y: ");
-        int alimentoY = scanner.nextInt();
-        scanner.nextLine(); // Limpar o buffer
+        int y = scanner.nextInt();
+        scanner.nextLine();
 
-        escolherPosAlimento(alimentoX, alimentoY);
+        escolherPosAlimento(x, y);
 
         boolean roboNormalAchou = false;
         boolean roboInteligenteAchou = false;
 
         while (!(roboNormalAchou && roboInteligenteAchou)) {
             exibirTabuleiro();
+
             if (!roboNormalAchou) {
                 try {
                     roboNormal.moverIA();
-                    // Verificar se encontrou o alimento
-                    if (roboNormal.encontrouAlimento(alimentoX, alimentoY)) {
+                    if (encontrouAlimento(roboNormal)) {
                         roboNormalAchou = true;
                         System.out.println("Robô Azul encontrou o alimento!");
-                    }
-                    if(!roboNormalAchou && roboInteligenteAchou) {
-                        System.out.println("Robô Vermelho já encontrou o alimento!");
                     }
                 } catch (MovimentoInvalidoException e) {
                     System.out.println("Erro de movimentação: " + e.getMessage());
@@ -50,24 +50,37 @@ public class MainDualMission extends BaseJogo {
             if (!roboInteligenteAchou) {
                 try {
                     roboInteligente.moverIA();
-                    // Verificar se encontrou o alimento
-                    if (roboInteligente.encontrouAlimento(alimentoX, alimentoY)) {
+                    if (encontrouAlimento(roboInteligente)) {
                         roboInteligenteAchou = true;
                         System.out.println("Robô Vermelho encontrou o alimento!");
-                    }
-
-                    if(roboNormalAchou && !roboInteligenteAchou) {
-                        System.out.println("Robô Azul já encontrou o alimento!");
                     }
                 } catch (MovimentoInvalidoException e) {
                     System.out.println("Erro de movimentação: " + e.getMessage());
                 }
             }
+
+            // Mensagem para o outro robô se já encontrou
+            if (roboNormalAchou && !roboInteligenteAchou) {
+                System.out.println("Robô Azul já encontrou o alimento!");
+            } else if (!roboNormalAchou && roboInteligenteAchou) {
+                System.out.println("Robô Vermelho já encontrou o alimento!");
+            }
         }
 
         System.out.println("\nOs dois robôs encontraram o alimento!");
+
+        for (int i = 0; i < robos.size(); i++) {
+            int numValidos = robos.get(i).numMovimentosValidos;
+            int numInvalidos = robos.get(i).numMovimentosInvalidos;
+            int numTotalMovimentos = numValidos + numInvalidos;
+
+            System.out.print("\nRobô " + robos.get(i).getCor()
+                    + " - Movimentos válidos: " + numValidos
+                    + " | Movimentos inválidos: " + numInvalidos
+                    + " | Total: " + numTotalMovimentos);
+        }
     }
-//metodos para interface
+//Adaptacao dos metodos para a interface
     public void executarJogo(String corRobo1,String corRobo2, int x, int y){
         escolherPosAlimento(x, y);
 
@@ -89,6 +102,10 @@ public class MainDualMission extends BaseJogo {
         if (!roboNormalAchou) {
             try {
                 roboNormal.moverIA();
+                if (encontrouAlimento(roboNormal)) {
+                    roboNormalAchou = true;
+                    System.out.println("Robô Azul encontrou o alimento!");
+                }
             } catch (MovimentoInvalidoException e) {
                 System.out.println("Erro de movimentação: " + e.getMessage());
             }
@@ -97,11 +114,27 @@ public class MainDualMission extends BaseJogo {
         if (!roboInteligenteAchou) {
             try {
                 roboInteligente.moverIA();
+                if (encontrouAlimento(roboInteligente)) {
+                    roboInteligenteAchou = true;
+                    System.out.println("Robô Vermelho encontrou o alimento!");
+                }
             } catch (MovimentoInvalidoException e) {
                 System.out.println("Erro de movimentação: " + e.getMessage());
             }
         }
 
+        if(roboNormalAchou==true && roboInteligenteAchou==true){
+            for (int i = 0; i < robos.size(); i++) {
+                int numValidos = robos.get(i).numMovimentosValidos;
+                int numInvalidos = robos.get(i).numMovimentosInvalidos;
+                int numTotalMovimentos = numValidos + numInvalidos;
+
+                System.out.print("\nRobô " + robos.get(i).getCor()
+                        + " - Movimentos válidos: " + numValidos
+                        + " | Movimentos inválidos: " + numInvalidos
+                        + " | Total: " + numTotalMovimentos);
+            }
+        }
         return encontrouAlimento(roboNormal) && encontrouAlimento(roboInteligente);
     }
 

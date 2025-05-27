@@ -10,6 +10,8 @@ public class Robo {
     private Random random;
     private boolean roboParalisado = false;
     protected List<int[]> posicoesHistorico;
+    protected int numMovimentosInvalidos = 0;
+    protected int numMovimentosValidos = 0;
 
     protected Robo(String cor) {
         this.x = 0;
@@ -17,64 +19,16 @@ public class Robo {
         this.cor = cor;
         this.random = new Random();
         this.posicoesHistorico = new ArrayList<>();
-    }
-
-    public void explodir() {
-        System.out.println("Robô " + cor + " explodiu e foi desativado!");
-        roboParalisado = true;
-    }
-
-    public void voltarPosicaoAnterior() {
-        if (posicoesHistorico.size() > 1) {
-            posicoesHistorico.remove(posicoesHistorico.size() - 1);
-            int[] posAnterior = posicoesHistorico.get(posicoesHistorico.size() - 1);
-            this.x = posAnterior[0];
-            this.y = posAnterior[1];
-            System.out.println("Robô " + cor + " voltou para a posição (" + x + ", " + y + ")");
-        }
+        salvarPosicaoAtual(); // Salvar posição inicial
     }
 
     protected void salvarPosicaoAtual() {
-        posicoesHistorico.add(new int[]{x, y});
-    }
-
-    protected void mover(String sentido) throws MovimentoInvalidoException {
-        if (roboParalisado) {
-            System.out.print("O robô foi explodido!");
-            return;
-        }
-        int novoX = x, novoY = y;
-        switch (sentido.toLowerCase()) {
-            case "up":
-                y++;
-                break;
-            case "down":
-                y--;
-                break;
-            case "right":
-                x++;
-                break;
-            case "left":
-                x--;
-                break;
-            default:
-                System.out.println("Direção inválida. Posição atual: (" + x + ", " + y + ")");
-        }
-
-        if (x < 0 || y < 0) {
-            throw new MovimentoInvalidoException(
-                    "Movimento inválido! A posição do robô não pode ser negativa. Tentativa: (" + x + ", " + y + ")");
-        }
-
-        salvarPosicaoAtual();
-        x = novoX;
-        y = novoY;
-        System.out.println(this);
+        posicoesHistorico.add(new int[] { x, y });
     }
 
     protected void mover(int sentido) throws MovimentoInvalidoException {
         if (roboParalisado) {
-            System.out.print("O robô foi explodido!");
+            System.out.println("O robô " + cor + " foi explodido!");
             return;
         }
         int novoX = x, novoY = y;
@@ -97,31 +51,46 @@ public class Robo {
         }
 
         if (novoX < 0 || novoY < 0 || novoX > 4 || novoY > 4) {
+            numMovimentosInvalidos++;
             throw new MovimentoInvalidoException(
                     "Movimento inválido! Posição resultante (" + novoX + ", " + novoY + ") fora do tabuleiro.");
         }
 
-        salvarPosicaoAtual();
+        numMovimentosValidos++;
         x = novoX;
         y = novoY;
+        salvarPosicaoAtual();
         System.out.println(this);
     }
 
     protected void moverIA() throws MovimentoInvalidoException {
+        if (roboParalisado) {
+            System.out.println("O robô " + cor + " está paralisado e não pode se mover.");
+            throw new MovimentoInvalidoException("Robô paralisado");
+        }
         while (true) {
-            if (roboParalisado) {
-                System.out.println("O robô " + cor + " está paralisado e não pode se mover.");
-                throw new MovimentoInvalidoException("Robô paralisado");
-            }
             int sentido = random.nextInt(4) + 1; // 1 a 4
-
             try {
                 mover(sentido);
                 break;
             } catch (MovimentoInvalidoException e) {
-                System.out.println("Erro inesperado: " + e.getMessage());
+                System.out.println("Movimento inválido para o robô " + cor + ": " + e.getMessage());
             }
+        }
+    }
 
+    public void explodir() {
+        System.out.println("Robô " + cor + " explodiu e foi desativado!");
+        roboParalisado = true;
+    }
+
+    public void voltarPosicaoAnterior() {
+        if (posicoesHistorico.size() > 1) {
+            posicoesHistorico.remove(posicoesHistorico.size() - 1);
+            int[] posAnterior = posicoesHistorico.get(posicoesHistorico.size() - 1);
+            this.x = posAnterior[0];
+            this.y = posAnterior[1];
+            System.out.println("Robô " + cor + " voltou para a posição (" + x + ", " + y + ")");
         }
     }
 
@@ -154,6 +123,6 @@ public class Robo {
     }
 
     public String toString() {
-        return "Robo " + cor + " na posição (" + y + ", " + x + ")";
+        return "Robo " + cor + " na posição (" + x + ", " + y + ")";
     }
 }

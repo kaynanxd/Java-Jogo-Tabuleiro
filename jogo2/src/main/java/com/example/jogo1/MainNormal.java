@@ -4,25 +4,14 @@ import java.util.Scanner;
 
 public class MainNormal extends BaseJogo {
 
-    private Robo roboManual; //variavel para interface
-
+    private Robo roboManual;
     public MainNormal() {
         super();
     }
-    // metodos para uso em terminal
+
+    // Metodos Da Logica Do Jogo
 
     public void executarJogo(Scanner scanner) {
-        System.out.println("\n=== Escolha a cor do Robô ===");
-        System.out.println("Digite a cor do seu Robô: ");
-        String corRobo = scanner.nextLine().trim();
-        while (corRobo.isEmpty()) {
-            System.out.println("Cor inválida! Por favor, digite novamente.");
-            System.out.print("Digite a cor do seu robô: ");
-            corRobo = scanner.nextLine().trim();
-        }
-
-        roboManual = new Robo(corRobo);
-        adicionarRobo(roboManual);
 
         System.out.print("\n=== Escolha a posição do alimento ===\n");
         System.out.print("Posição x: ");
@@ -30,50 +19,41 @@ public class MainNormal extends BaseJogo {
         System.out.print("Posição y: ");
         alimentoY = scanner.nextInt();
         scanner.nextLine();
+
         escolherPosAlimento(alimentoX, alimentoY);
+
+        roboManual = new Robo("Azul");
+        adicionarRobo(roboManual);
 
         while (!encontrouAlimento(roboManual)) {
             exibirTabuleiro();
-            System.out.println("\nMovimente o Robô com:");
-            System.out.println("Cima - 1 (Up)");
-            System.out.println("Baixo - 2 (Down)");
-            System.out.println("Direita - 3 (Right)");
-            System.out.println("Esquerda - 4 (Left)");
-            System.out.println("0 - Sair");
-            System.out.print("Digite sua escolha: ");
+            System.out.println("Posição atual do robô: (" + roboManual.getX() + "," + roboManual.getY() + ")");
+            System.out.print("Digite o próximo movimento (1=Cima, 2=Baixo, 3=Direita, 4=Esquerda): ");
 
-            String input = scanner.nextLine().trim();
+            int direcao;
+            try {
+                direcao = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida! Digite um número entre 1 e 4.");
+                continue;
+            }
 
-            if (input.equals("0") || input.equalsIgnoreCase("sair")) {
-                System.out.println("\nPrograma encerrado. A posição final foi: " + roboManual);
-                return;
+            if (direcao < 1 || direcao > 4) {
+                System.out.println("Número inválido! Use 1, 2, 3 ou 4.");
+                continue;
             }
 
             try {
-                if (input.matches("[1-4]")) {
-                    roboManual.mover(Integer.parseInt(input));
-                } else if (input.equalsIgnoreCase("up") ||
-                        input.equalsIgnoreCase("down") ||
-                        input.equalsIgnoreCase("right") ||
-                        input.equalsIgnoreCase("left")) {
-                    roboManual.mover(input.toLowerCase());
-                } else {
-                    System.out.println("Entrada inválida! Use 1-4 ou palavras-chave (up, down, right, left).");
-                    continue;
-                }
+                roboManual.mover(direcao);
             } catch (MovimentoInvalidoException e) {
-                System.out.println("Erro de movimentação: " + e.getMessage());
-            } catch (Exception e) {
-                System.out.println("Erro inesperado: " + e.getMessage());
+                System.out.println("Movimento inválido: " + e.getMessage());
             }
         }
-
         exibirTabuleiro();
-        System.out.println("\n★ PARABÉNS! O ROBÔ " + roboManual.getCor().toUpperCase() + " encontrou o alimento! ★");
-        System.out.println("Posição final: " + roboManual);
+        System.out.println("O robô encontrou o alimento!");
     }
 
-    // ✅ Novos metodos baseado no de cima para uso com interface gráfica
+    //Adaptacao dos metodos para usar a interface gráfica
 
     public void executarJogo(String corRobo1, int x, int y) {
         roboManual = new Robo(corRobo1);
@@ -83,15 +63,28 @@ public class MainNormal extends BaseJogo {
 
     public boolean moverRobo(String input) {
         try {
-            roboManual.mover(Integer.parseInt(input));
+            String imputEmMinisculo = input.toLowerCase();
+            switch(imputEmMinisculo) {
+                case "1": case "up":
+                    roboManual.mover(1);  // Cima
+                    break;
+                case "2": case "down":
+                    roboManual.mover(2);  // Baixo
+                    break;
+                case "3": case "right":
+                    roboManual.mover(3);  // Direita
+                    break;
+                case "4": case "left":
+                    roboManual.mover(4);  // Esquerda
+                    break;
+                default:
+                    System.out.println("Entrada inválida!");
+                    return false;
+            }
         } catch (MovimentoInvalidoException e) {
             System.out.println("Erro de movimentação: " + e.getMessage());
             return false;
-        } catch (Exception e) {
-            System.out.println("Erro inesperado: " + e.getMessage());
-            return false;
         }
-
         return encontrouAlimento(roboManual);
     }
 

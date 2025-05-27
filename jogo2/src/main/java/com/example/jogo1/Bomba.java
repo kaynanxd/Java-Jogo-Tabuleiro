@@ -15,7 +15,7 @@ public class Bomba extends Obstaculo {
     public void bater(Robo robo) {
         if (bombaAtiva) {
             System.out.println(
-                    "O robô " + robo.getCor() + " foi eliminado pela bomba na posição (" + posY + "," + posX + ")");
+                    "O robô " + robo.getCor() + " foi eliminado pela bomba na posição (" + posX + "," + posY + ")");
             robo.explodir();
             this.bombaAtiva = false;
         }

@@ -2,7 +2,6 @@ package com.example.jogo1;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-// Classe base do jogo
 public abstract class BaseJogo {
     protected String[][] tabuleiro;
     protected int tamanhoTabuleiro = 5;
@@ -40,25 +39,22 @@ public abstract class BaseJogo {
     protected void exibirTabuleiro() {
         inicializarTabuleiro();
 
-        // Marca posição do alimento
         tabuleiro[alimentoX][alimentoY] = "[A]";
 
-        // Marca todas as bombas ativas
-        for (int i = 0; i < bombas.size(); i++) {
+        for (int i = 0; i < bombas.size(); i++) { //marca bombas
             Bomba bomba = bombas.get(i);
             if (bomba.bombaAtivada()) {
                 tabuleiro[bomba.getX()][bomba.getY()] = "[B]";
             }
         }
 
-        // Marca todas as rochas
-        for (int i = 0; i < rochas.size(); i++) {
+        for (int i = 0; i < rochas.size(); i++) { //marca pedras
             Rocha rocha = rochas.get(i);
             tabuleiro[rocha.getX()][rocha.getY()] = "[R]";
         }
 
-        // Marca posição dos robôs
-        for (int i = 0; i < robos.size(); i++) {
+
+        for (int i = 0; i < robos.size(); i++) { //marca robos
             Robo robo = robos.get(i);
             tabuleiro[robo.getX()][robo.getY()] = "[R" + robo.getCor().substring(0, 1).toUpperCase() + "]";
         }
@@ -76,4 +72,5 @@ public abstract class BaseJogo {
         return robo.getX() == alimentoX && robo.getY() == alimentoY;
     }
 
+    public abstract void executarJogo(Scanner scanner);
 }

@@ -4,40 +4,17 @@ import java.util.Scanner;
 
 public class MainSurvivalBots extends BaseJogo {
 
-    public MainSurvivalBots() {
-        super();
+    public MainSurvivalBots() { super(); }
 
-    }
-    //metodos para terminal
-    private void verificarColisoes(Robo robo) {
-        for (int i = 0; i < bombas.size(); i++) {
-            Bomba bomba = bombas.get(i);
-            if (bomba.getX() == robo.getX() && bomba.getY() == robo.getY()) {
-                bomba.bater(robo);
-                if (!bomba.bombaAtivada()) {
-                    removerBombaDaInterface(bomba.getX(), bomba.getY());
-                }
-                return; // sai depois do primeiro choque
-            }
-        }
+    //Metodos Da Logica Do Jogo
 
-        for (int i = 0; i < rochas.size(); i++) {
-            Rocha rocha = rochas.get(i);
-            if (rocha.getX() == robo.getX() && rocha.getY() == robo.getY()) {
-                rocha.bater(robo);
-                return;
-            }
-        }
-    }
-
-    public void executarJogo(String corRobo, int alimentoX, int alimentoY) {
+    public void executarJogo(Scanner scanner) {
 
         Robo robo1 = new Robo("Azul");
-        Robo robo2 = new Robo("Vermelho");
+        RoboInteligente robo2 = new RoboInteligente("Vermelho");
         adicionarRobo(robo1);
         adicionarRobo(robo2);
 
-        Scanner scanner = new Scanner(System.in);
         escolherPosAlimento(alimentoX, alimentoY);
 
         boolean robo1AchouAlimento = false;
@@ -96,12 +73,44 @@ public class MainSurvivalBots extends BaseJogo {
 
         if (robo1AchouAlimento) {
             System.out.println("Robo " + robos.get(0).getCor() + " encontrou o alimento!");
+            mostrarEstatisticas();
         }
         if (robo2AchouAlimento && !robo1AchouAlimento) {
             System.out.println("Robo " + robos.get(1).getCor() + " encontrou o alimento!");
+            mostrarEstatisticas();
         }
     }
-    //metodos para interface grafica
+
+    public void mostrarEstatisticas(){
+        for (int i = 0; i < robos.size(); i++) {
+            System.out.print("\nRobô " + robos.get(i).getCor() + " - Movimentos válidos: " +
+                    robos.get(i).numMovimentosValidos + " | Movimentos inválidos: " + robos.get(i).numMovimentosInvalidos);
+
+        }
+    }
+
+    private void verificarColisoes(Robo robo) {
+        for (int i = 0; i < bombas.size(); i++) {
+            Bomba bomba = bombas.get(i);
+            if (bomba.getX() == robo.getX() && bomba.getY() == robo.getY()) {
+                bomba.bater(robo);
+                if (!bomba.bombaAtivada()) {
+                    removerBombaDaInterface(bomba.getX(), bomba.getY());
+                }
+                return;
+            }
+        }
+
+        for (int i = 0; i < rochas.size(); i++) {
+            Rocha rocha = rochas.get(i);
+            if (rocha.getX() == robo.getX() && rocha.getY() == robo.getY()) {
+                rocha.bater(robo);
+                return;
+            }
+        }
+    }
+
+    //Adaptacao dos Metodos para interface grafica funcionar
     private List<int[]> posicoesBombasSelecionadas;
 
     public void setPosicoesBombasSelecionadas(List<int[]> posicoesBombasSelecionadas) {
@@ -110,7 +119,7 @@ public class MainSurvivalBots extends BaseJogo {
 
     public void executarJogo(String corRobo1,String corRobo2, int x, int y, List<int[]> bombasSelecionadas, List<int[]> pedrasSelecionadas) {
         Robo robo1 = new Robo(corRobo1);
-        Robo robo2 = new Robo(corRobo2);
+        RoboInteligente robo2 = new RoboInteligente(corRobo2);
         adicionarRobo(robo1);
         adicionarRobo(robo2);
 
@@ -118,13 +127,13 @@ public class MainSurvivalBots extends BaseJogo {
 
         int id = 1;
         for (int[] pos : bombasSelecionadas) {
-            Bomba bomba = new Bomba(id++, pos[0], pos[1]);
+            Bomba bomba = new Bomba(id++, pos[1], pos[0]);
             bombas.add(bomba);
         }
 
         id = 1;
         for (int[] pos : pedrasSelecionadas) {
-            Rocha rocha = new Rocha(id++, pos[0], pos[1]);
+            Rocha rocha = new Rocha(id++, pos[1], pos[0]);
             rochas.add(rocha);
         }
     }
@@ -141,15 +150,17 @@ public class MainSurvivalBots extends BaseJogo {
             }
         }
 
-        // Verifica se algum robô ativo encontrou alimento
         for (Robo robo : robos) {
             if (robo.isAtivo() && encontrouAlimento(robo)) {
+                mostrarEstatisticas();
                 return true;
             }
         }
 
-        // Verifica se todos explodiram
         boolean todosMortos = robos.stream().noneMatch(Robo::isAtivo);
+        if(todosMortos==true){
+            mostrarEstatisticas();
+        }
         return todosMortos;
     }
 

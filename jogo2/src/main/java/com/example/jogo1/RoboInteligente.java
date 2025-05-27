@@ -15,42 +15,16 @@ public class RoboInteligente extends Robo {
                 movimentosInvalidos[i][j] = new ArrayList<>();
             }
         }
-    }
-
-    @Override
-    protected void mover(int sentido) throws MovimentoInvalidoException {
-        int novoX = getX(), novoY = getY();
-
-        switch (sentido) {
-            case 1: // Cima
-                novoY++;
-                break;
-            case 2: // Baixo
-                novoY--;
-                break;
-            case 3: // Direita
-                novoX++;
-                break;
-            case 4: // Esquerda
-                novoX--;
-                break;
-            default:
-                throw new MovimentoInvalidoException("Direção inválida: " + sentido);
-        }
-
-        // Verifica limites do tabuleiro
-        if (novoX < 0 || novoY < 0 || novoX > 4 || novoY > 4) {
-            movimentosInvalidos[getX()][getY()].add(sentido);
-            throw new MovimentoInvalidoException("Movimento inválido na posição (" + getX() + "," + getY() + ")");
-        }
-
-        setX(novoX);
-        setY(novoY);
-        System.out.println("Robô " + getCor() + " moveu para (" + getX() + "," + getY() + ")");
+        salvarPosicaoAtual();
     }
 
     @Override
     protected void moverIA() throws MovimentoInvalidoException {
+        if (!isAtivo()) {
+            System.out.println("O robô " + getCor() + " está paralisado e não pode se mover.");
+            throw new MovimentoInvalidoException("Robô paralisado");
+        }
+
         ArrayList<Integer> movimentosPossiveis = new ArrayList<>();
         for (int sentido = 1; sentido <= 4; sentido++) {
             if (!movimentosInvalidos[getX()][getY()].contains(sentido)) {
@@ -63,13 +37,21 @@ public class RoboInteligente extends Robo {
                     getX() + "," + getY() + ")");
         }
 
-        int sentidoEscolhido = movimentosPossiveis.get(random.nextInt(movimentosPossiveis.size()));
-
-        try {
-            mover(sentidoEscolhido);
-        } catch (MovimentoInvalidoException e) {
-            movimentosInvalidos[getX()][getY()].add(sentidoEscolhido);
-            throw e;
+        boolean movimentoRealizado = false;
+        while (!movimentoRealizado) {
+            int sentidoEscolhido = movimentosPossiveis.get(random.nextInt(movimentosPossiveis.size()));
+            try {
+                mover(sentidoEscolhido);
+                movimentoRealizado = true;
+            } catch (MovimentoInvalidoException e) {
+                movimentosInvalidos[getX()][getY()].add(sentidoEscolhido);
+                movimentosPossiveis.remove((Integer) sentidoEscolhido);
+                if (movimentosPossiveis.isEmpty()) {
+                    throw new MovimentoInvalidoException(
+                            "Nenhum movimento válido disponível após tentativas na posição (" +
+                                    getX() + "," + getY() + ")");
+                }
+            }
         }
     }
 }
