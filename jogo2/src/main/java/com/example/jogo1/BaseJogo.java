@@ -5,7 +5,7 @@ import java.util.Scanner;
 public abstract class BaseJogo {
     protected String[][] tabuleiro;
     protected int tamanhoTabuleiro = 5;
-    protected ArrayList<Robo> robos;
+    protected ArrayList<RoboBase> robos;
     protected ArrayList<Bomba> bombas;
     protected ArrayList<Rocha> rochas;
 
@@ -32,7 +32,7 @@ public abstract class BaseJogo {
         alimentoY = y;
     }
 
-    protected void adicionarRobo(Robo robo) {
+    protected void adicionarRobo(RoboBase robo) {
         robos.add(robo);
     }
 
@@ -55,7 +55,7 @@ public abstract class BaseJogo {
 
 
         for (int i = 0; i < robos.size(); i++) { //marca robos
-            Robo robo = robos.get(i);
+            RoboBase robo = robos.get(i);
             tabuleiro[robo.getX()][robo.getY()] = "[R" + robo.getCor().substring(0, 1).toUpperCase() + "]";
         }
 
@@ -68,7 +68,7 @@ public abstract class BaseJogo {
         }
     }
 
-    protected boolean encontrouAlimento(Robo robo) {
+    protected boolean encontrouAlimento(RoboBase robo) {
         return robo.getX() == alimentoX && robo.getY() == alimentoY;
     }
 

@@ -27,9 +27,9 @@ public class InterfaceJogo {
     private int[] posicaoAlimentoSelecionada;
     private List<int[]> posicoesBombasSelecionadas = new ArrayList<>();
     private List<int[]> posicoesPedrasSelecionadas = new ArrayList<>();
-    private Map<Robo, Color> corDosRobos = new HashMap<>(); //mapa com cor das imagems do robo
+    private Map<RoboBase, Color> corDosRobos = new HashMap<>(); //mapa com cor das imagems do robo
     private Map<String, Color> coresPorJogador = new HashMap<>(); //mapa com as cores dos robos
-    private Map<Robo, ImageView> roboViews = new HashMap<>();
+    private Map<RoboBase, ImageView> roboViews = new HashMap<>();
     private Color corSelecionadaAtual;
     private Main mainApp;
 
@@ -508,30 +508,30 @@ public class InterfaceJogo {
         exibirElementosNaMatriz(matriz);
 
         if (jogo instanceof MainNormal) {
-            Robo robo = ((MainNormal) jogo).getRoboManual();
+            RoboBase robo = ((MainNormal) jogo).getRoboManual();
             adicionarRoboNaMatriz(matriz, robo);
         }
         else if (jogo instanceof MainMachine) {
             MainMachine machine = (MainMachine) jogo;
-            for (Robo robo : machine.getRobos()) {
+            for (RoboBase robo : machine.getRobos()) {
                 adicionarRoboNaMatriz(matriz, robo);
             }
         }
         else if (jogo instanceof MainDualMission) {
             MainDualMission dualMission = (MainDualMission) jogo;
-            for (Robo robo : dualMission.getRobos()) {
+            for (RoboBase robo : dualMission.getRobos()) {
                 adicionarRoboNaMatriz(matriz, robo);
             }
         }
         else if (jogo instanceof MainSurvivalBots) {
             MainSurvivalBots survivalBots = (MainSurvivalBots) jogo;
-            for (Robo robo : survivalBots.getRobos()) {
+            for (RoboBase robo : survivalBots.getRobos()) {
                 adicionarRoboNaMatriz(matriz, robo);
             }
         }
     }
 
-    private void adicionarRoboNaMatriz(GridPane matriz, Robo robo) {
+    private void adicionarRoboNaMatriz(GridPane matriz, RoboBase robo) {
         if (!robo.isAtivo()) {
             ImageView img = roboViews.get(robo);
             if (img != null) {
@@ -674,7 +674,7 @@ public class InterfaceJogo {
         String nomecor2=converterColorParaString(cor2);
 
         MainMachine jogo = new MainMachine();
-        List<Robo> robos = jogo.getRobos();
+        List<RoboBase> robos = jogo.getRobos();
         jogo.executarJogo(nomecor1, nomecor2, pos[1], pos[0]);
         corDosRobos.put(robos.get(0), cor1);
         corDosRobos.put(robos.get(1), cor2);
@@ -710,7 +710,7 @@ public class InterfaceJogo {
             if (achou) {
                 String vencedor = jogo.getRobos().stream()
                         .filter(robo -> jogo.encontrouAlimento(robo))
-                        .map(Robo::getCor)
+                        .map(RoboBase::getCor)
                         .findFirst()
                         .orElse("IA");
 
@@ -730,7 +730,7 @@ public class InterfaceJogo {
         String nomecor2=converterColorParaString(cor2);
 
         MainDualMission jogo = new MainDualMission();
-        List<Robo> robos = jogo.getRobos();
+        List<RoboBase> robos = jogo.getRobos();
 
         jogo.executarJogo(nomecor1,nomecor2, pos[1], pos[0]);
         corDosRobos.put(robos.get(0), cor1);
@@ -785,7 +785,7 @@ public class InterfaceJogo {
         String nomecor2=converterColorParaString(cor2);
 
         MainSurvivalBots jogo = new MainSurvivalBots();
-        List<Robo> robos = jogo.getRobos();
+        List<RoboBase> robos = jogo.getRobos();
         jogo.setPosicoesBombasSelecionadas(pos1);
         jogo.executarJogo(nomecor1,nomecor2, pos[1], pos[0], pos1, pos2);
         corDosRobos.put(robos.get(0), cor1);
@@ -821,7 +821,7 @@ public class InterfaceJogo {
             if (achou) {
                 Optional<String> vencedor = jogo.getRobos().stream()
                         .filter(robo -> jogo.encontrouAlimento(robo))
-                        .map(Robo::getCor)
+                        .map(RoboBase::getCor)
                         .findFirst();
 
                 loopIA[0].stop();
@@ -875,7 +875,7 @@ public class InterfaceJogo {
         return containerControles;
     }
 
-    public void botaoVitoria(String corRobo, List<Robo> robos) {
+    public void botaoVitoria(String corRobo, List<RoboBase> robos) {
         Platform.runLater(() -> {
             musica.tocarEfeito(AUDIO_APLAUSO);
 
@@ -916,7 +916,7 @@ public class InterfaceJogo {
     }
 
 
-    public void botaoDerrota( List<Robo> robos) {
+    public void botaoDerrota( List<RoboBase> robos) {
         Platform.runLater(() -> {
             musica.tocarEfeito(AUDIO_DERROTA);
 
@@ -958,9 +958,9 @@ public class InterfaceJogo {
         });
     }
 
-    public String mostrarEstatisticas(List<Robo> robos) {
+    public String mostrarEstatisticas(List<RoboBase> robos) {
         StringBuilder sb = new StringBuilder();
-        for (Robo robo : robos) {
+        for (RoboBase robo : robos) {
             int movimentosTotais = robo.numMovimentosValidos;
             int movimentosValidosReais = movimentosTotais - robo.numMovimentosInvalidos;
 

@@ -2,7 +2,7 @@ package com.example.jogo1;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class RoboInteligente extends Robo {
+public class RoboInteligente extends RoboBase {
     protected ArrayList<Integer>[][] movimentosInvalidos;
     private Random random;
 

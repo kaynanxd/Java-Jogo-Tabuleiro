@@ -4,18 +4,15 @@ import java.util.Scanner;
 
 public class MainDualMission extends BaseJogo {
 
-
     public MainDualMission() {
         super();
     }
 
     @Override
-
-    //Metodos Logica do jogo
+    // Métodos Lógica do jogo
     public void executarJogo(Scanner scanner) {
-
-        Robo roboNormal = new Robo("Azul");
-        RoboInteligente roboInteligente = new RoboInteligente("Vermelho");
+        RoboBase roboNormal = new Robo("Azul");
+        RoboBase roboInteligente = new RoboInteligente("Vermelho");
 
         adicionarRobo(roboNormal);
         adicionarRobo(roboInteligente);
@@ -69,32 +66,34 @@ public class MainDualMission extends BaseJogo {
 
         System.out.println("\nOs dois robôs encontraram o alimento!");
 
+        // Exibição das estatísticas dos robôs
         for (int i = 0; i < robos.size(); i++) {
-            int numValidos = robos.get(i).numMovimentosValidos;
-            int numInvalidos = robos.get(i).numMovimentosInvalidos;
+            RoboBase robo = robos.get(i);
+            int numValidos = robo.numMovimentosValidos;
+            int numInvalidos = robo.numMovimentosInvalidos;
             int numTotalMovimentos = numValidos + numInvalidos;
 
-            System.out.print("\nRobô " + robos.get(i).getCor()
+            System.out.print("\nRobô " + robo.getCor()
                     + " - Movimentos válidos: " + numValidos
                     + " | Movimentos inválidos: " + numInvalidos
                     + " | Total: " + numTotalMovimentos);
         }
     }
-//Adaptacao dos metodos para a interface
-    public void executarJogo(String corRobo1,String corRobo2, int x, int y){
+
+    // Adaptação dos métodos para a interface
+    public void executarJogo(String corRobo1, String corRobo2, int x, int y) {
         escolherPosAlimento(x, y);
 
-        Robo roboNormal = new Robo(corRobo1);
-        RoboInteligente roboInteligente = new RoboInteligente(corRobo2);
+        RoboBase roboNormal = new Robo(corRobo1);
+        RoboBase roboInteligente = new RoboInteligente(corRobo2);
 
         adicionarRobo(roboNormal);
         adicionarRobo(roboInteligente);
     }
 
     public boolean atualizarMovimentoIA() {
-
-        Robo roboNormal = robos.get(0);
-        Robo roboInteligente = robos.get(1);
+        RoboBase roboNormal = robos.get(0);
+        RoboBase roboInteligente = robos.get(1);
 
         boolean roboNormalAchou = encontrouAlimento(roboNormal);
         boolean roboInteligenteAchou = encontrouAlimento(roboInteligente);
@@ -123,22 +122,25 @@ public class MainDualMission extends BaseJogo {
             }
         }
 
-        if(roboNormalAchou==true && roboInteligenteAchou==true){
+        if (roboNormalAchou && roboInteligenteAchou) {
+            // Exibir as estatísticas após ambos os robôs encontrarem o alimento
             for (int i = 0; i < robos.size(); i++) {
-                int numValidos = robos.get(i).numMovimentosValidos;
-                int numInvalidos = robos.get(i).numMovimentosInvalidos;
+                RoboBase robo = robos.get(i);
+                int numValidos = robo.numMovimentosValidos;
+                int numInvalidos = robo.numMovimentosInvalidos;
                 int numTotalMovimentos = numValidos + numInvalidos;
 
-                System.out.print("\nRobô " + robos.get(i).getCor()
+                System.out.print("\nRobô " + robo.getCor()
                         + " - Movimentos válidos: " + numValidos
                         + " | Movimentos inválidos: " + numInvalidos
                         + " | Total: " + numTotalMovimentos);
             }
         }
+
         return encontrouAlimento(roboNormal) && encontrouAlimento(roboInteligente);
     }
 
-    public List<Robo> getRobos() {
+    public List<RoboBase> getRobos() {
         return robos;
     }
 }

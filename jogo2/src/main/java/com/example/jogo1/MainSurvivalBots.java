@@ -1,17 +1,17 @@
 package com.example.jogo1;
+
 import java.util.List;
 import java.util.Scanner;
 
 public class MainSurvivalBots extends BaseJogo {
 
-    public MainSurvivalBots() { super(); }
-
-    //Metodos Da Logica Do Jogo
+    public MainSurvivalBots() {
+        super();
+    }
 
     public void executarJogo(Scanner scanner) {
-
-        Robo robo1 = new Robo("Azul");
-        RoboInteligente robo2 = new RoboInteligente("Vermelho");
+        RoboBase robo1 = new Robo("Azul");
+        RoboBase robo2 = new RoboInteligente("Vermelho");
         adicionarRobo(robo1);
         adicionarRobo(robo2);
 
@@ -54,7 +54,7 @@ public class MainSurvivalBots extends BaseJogo {
 
         while (!(robo1AchouAlimento || robo2AchouAlimento)) {
             for (int i = 0; i < robos.size(); i++) {
-                Robo robo = robos.get(i);
+                RoboBase robo = robos.get(i);
                 if (!encontrouAlimento(robo)) {
                     try {
                         robo.moverIA();
@@ -75,21 +75,23 @@ public class MainSurvivalBots extends BaseJogo {
             System.out.println("Robo " + robos.get(0).getCor() + " encontrou o alimento!");
             mostrarEstatisticas();
         }
+
         if (robo2AchouAlimento && !robo1AchouAlimento) {
             System.out.println("Robo " + robos.get(1).getCor() + " encontrou o alimento!");
             mostrarEstatisticas();
         }
     }
 
-    public void mostrarEstatisticas(){
+    public void mostrarEstatisticas() {
         for (int i = 0; i < robos.size(); i++) {
-            System.out.print("\nRobô " + robos.get(i).getCor() + " - Movimentos válidos: " +
-                    robos.get(i).numMovimentosValidos + " | Movimentos inválidos: " + robos.get(i).numMovimentosInvalidos);
-
+            RoboBase robo = robos.get(i);
+            System.out.println("\nRobô " + robo.getCor() +
+                    " - Movimentos válidos: " + robo.numMovimentosValidos +
+                    " | Movimentos inválidos: " + robo.numMovimentosInvalidos);
         }
     }
 
-    private void verificarColisoes(Robo robo) {
+    private void verificarColisoes(RoboBase robo) {
         for (int i = 0; i < bombas.size(); i++) {
             Bomba bomba = bombas.get(i);
             if (bomba.getX() == robo.getX() && bomba.getY() == robo.getY()) {
@@ -110,36 +112,38 @@ public class MainSurvivalBots extends BaseJogo {
         }
     }
 
-    //Adaptacao dos Metodos para interface grafica funcionar
     private List<int[]> posicoesBombasSelecionadas;
 
     public void setPosicoesBombasSelecionadas(List<int[]> posicoesBombasSelecionadas) {
         this.posicoesBombasSelecionadas = posicoesBombasSelecionadas;
     }
 
-    public void executarJogo(String corRobo1,String corRobo2, int x, int y, List<int[]> bombasSelecionadas, List<int[]> pedrasSelecionadas) {
-        Robo robo1 = new Robo(corRobo1);
-        RoboInteligente robo2 = new RoboInteligente(corRobo2);
+    public void executarJogo(String corRobo1, String corRobo2, int x, int y, List<int[]> bombasSelecionadas, List<int[]> pedrasSelecionadas) {
+        RoboBase robo1 = new Robo(corRobo1);
+        RoboBase robo2 = new RoboInteligente(corRobo2);
         adicionarRobo(robo1);
         adicionarRobo(robo2);
 
         escolherPosAlimento(x, y);
 
         int id = 1;
-        for (int[] pos : bombasSelecionadas) {
+        for (int i = 0; i < bombasSelecionadas.size(); i++) {
+            int[] pos = bombasSelecionadas.get(i);
             Bomba bomba = new Bomba(id++, pos[1], pos[0]);
             bombas.add(bomba);
         }
 
         id = 1;
-        for (int[] pos : pedrasSelecionadas) {
+        for (int i = 0; i < pedrasSelecionadas.size(); i++) {
+            int[] pos = pedrasSelecionadas.get(i);
             Rocha rocha = new Rocha(id++, pos[1], pos[0]);
             rochas.add(rocha);
         }
     }
 
     public boolean atualizarMovimentoIA() {
-        for (Robo robo : robos) {
+        for (int i = 0; i < robos.size(); i++) {
+            RoboBase robo = robos.get(i);
             if (!robo.isAtivo() || encontrouAlimento(robo)) continue;
 
             try {
@@ -150,17 +154,26 @@ public class MainSurvivalBots extends BaseJogo {
             }
         }
 
-        for (Robo robo : robos) {
+        for (int i = 0; i < robos.size(); i++) {
+            RoboBase robo = robos.get(i);
             if (robo.isAtivo() && encontrouAlimento(robo)) {
                 mostrarEstatisticas();
                 return true;
             }
         }
 
-        boolean todosMortos = robos.stream().noneMatch(Robo::isAtivo);
-        if(todosMortos==true){
+        boolean todosMortos = true;
+        for (int i = 0; i < robos.size(); i++) {
+            if (robos.get(i).isAtivo()) {
+                todosMortos = false;
+                break;
+            }
+        }
+
+        if (todosMortos) {
             mostrarEstatisticas();
         }
+
         return todosMortos;
     }
 
@@ -170,7 +183,7 @@ public class MainSurvivalBots extends BaseJogo {
         }
     }
 
-    public List<Robo> getRobos() {
+    public List<RoboBase> getRobos() {
         return robos;
     }
 }

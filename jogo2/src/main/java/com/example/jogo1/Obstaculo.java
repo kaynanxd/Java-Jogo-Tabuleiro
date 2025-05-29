@@ -18,7 +18,7 @@ public abstract class Obstaculo {
         return posY;
     }
 
-    public abstract void bater(Robo robo);
+    public abstract void bater(RoboBase robo);
 
     public boolean colisorObstaculo(int x, int y) {
         return this.posX == x && this.posY == y;

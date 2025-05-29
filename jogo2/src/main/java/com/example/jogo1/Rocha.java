@@ -6,7 +6,7 @@ public class Rocha extends Obstaculo {
     }
 
     @Override
-    public void bater(Robo robo) {
+    public void bater(RoboBase robo) {
         System.out.println("O robô " + robo.getCor() + " bateu em uma rocha na posição (" + posX + "," + posY + ")");
         robo.voltarPosicaoAnterior();
     }

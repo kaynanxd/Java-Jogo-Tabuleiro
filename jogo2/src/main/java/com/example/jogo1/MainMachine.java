@@ -4,14 +4,14 @@ import java.util.Scanner;
 
 public class MainMachine extends BaseJogo {
 
-    private Robo robo1;
-    private Robo robo2;
+    private RoboBase robo1;
+    private RoboBase robo2;
 
     public MainMachine() {
         super();
     }
 
-    //Metodos Da Logica Do Jogo
+    // Métodos Da Lógica Do Jogo
     public void executarJogo(Scanner scanner) {
         System.out.print("\n=== Escolha a posição do alimento ===\n");
         System.out.print("Posição x: ");
@@ -25,14 +25,15 @@ public class MainMachine extends BaseJogo {
         boolean robo1Achou = false;
         boolean robo2Achou = false;
 
-        Robo robo1 = new Robo("Azul");
-        Robo robo2 = new Robo("Vermelho");
+        // Instanciação dos robôs
+        robo1 = new Robo("Azul");
+        robo2 = new Robo("Vermelho");
         adicionarRobo(robo1);
         adicionarRobo(robo2);
 
         while (!(robo1Achou || robo2Achou)) {
             for (int i = 0; i < robos.size(); i++) {
-                Robo robo = robos.get(i);
+                RoboBase robo = robos.get(i);
                 if (!encontrouAlimento(robo)) {
                     try {
                         robo.moverIA();
@@ -48,23 +49,28 @@ public class MainMachine extends BaseJogo {
             robo2Achou = encontrouAlimento(robos.get(1));
         }
 
+        // Exibição de mensagens de vitória
         if (robo1Achou) {
             System.out.println("Robo " + robos.get(0).getCor() + " encontrou o alimento!");
         }
         if (robo2Achou && !robo1Achou) {
             System.out.println("Robo " + robos.get(1).getCor() + " encontrou o alimento!");
         }
-        for (int i = 0; i < robos.size(); i++) {
-            System.out.print(
-                    "\nRobô " + robos.get(i).getCor() + " - Movimentos válidos: " + robos.get(i).numMovimentosValidos +
-                            " | Movimentos inválidos: " + robos.get(i).numMovimentosInvalidos);
 
+        // Exibição das estatísticas dos robôs
+        for (int i = 0; i < robos.size(); i++) {
+            RoboBase robo = robos.get(i);
+            System.out.print(
+                    "\nRobô " + robo.getCor() + " - Movimentos válidos: " + robo.numMovimentosValidos +
+                            " | Movimentos inválidos: " + robo.numMovimentosInvalidos);
         }
     }
-    //Adaptacao Dos Metodos Para Funcioanr na interface
-    public void executarJogo(String corRobo1,String corRobo2, int x, int y) {
+
+    // Adaptação dos métodos para funcionar na interface
+    public void executarJogo(String corRobo1, String corRobo2, int x, int y) {
         escolherPosAlimento(x, y);
 
+        // Instanciação dos robôs
         robo1 = new Robo(corRobo1);
         robo2 = new Robo(corRobo2);
 
@@ -75,7 +81,8 @@ public class MainMachine extends BaseJogo {
     public boolean atualizarMovimentoIA() {
         boolean algumAchou = false;
 
-        for (Robo robo : robos) {
+        // Movimentação dos robôs
+        for (RoboBase robo : robos) {
             if (!encontrouAlimento(robo)) {
                 try {
                     robo.moverIA();
@@ -86,23 +93,26 @@ public class MainMachine extends BaseJogo {
         }
 
         // Checa se algum robô chegou ao alimento
-        for (Robo robo : robos) {
+        for (RoboBase robo : robos) {
             if (encontrouAlimento(robo)) {
                 algumAchou = true;
             }
         }
 
-        if(algumAchou==true){
+        // Exibição das estatísticas se algum robô encontrou o alimento
+        if (algumAchou) {
             for (int i = 0; i < robos.size(); i++) {
+                RoboBase robo = robos.get(i);
                 System.out.print(
-                        "\nRobô " + robos.get(i).getCor() + " - Movimentos válidos: " + robos.get(i).numMovimentosValidos +
-                                " | Movimentos inválidos: " + robos.get(i).numMovimentosInvalidos);
+                        "\nRobô " + robo.getCor() + " - Movimentos válidos: " + robo.numMovimentosValidos +
+                                " | Movimentos inválidos: " + robo.numMovimentosInvalidos);
             }
         }
+
         return algumAchou;
     }
 
-    public List<Robo> getRobos() {
+    public List<RoboBase> getRobos() {
         return robos;
     }
 }
