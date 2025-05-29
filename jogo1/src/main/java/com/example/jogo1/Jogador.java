@@ -55,26 +55,4 @@ public class Jogador {
         this.rodadasParalisado = rodadas;
         this.jogadorParalisado = rodadas > 0;
     }
-
-    public void movimentarJogador() {        
-        if (jogadorParalisado) {
-            System.out.print("\nO jogador não joga esta rodada pois está paralisado.\n");
-            rodadasParalisado--;
-            if (rodadasParalisado <= 0) {
-                jogadorParalisado = false;
-            }
-            return;
-        }
-
-        dados.rolarDados(tipoJogador);
-        int movimento = dados.getSomaDados();
-        posicaoAtual += movimento;
-        casasAndadas += movimento;
-        dados.exibirDados();
-        System.out.println("\n" + nomeJogador + " (" + tipoJogador + ") andou " +
-                movimento + " casas e agora está na posição " + posicaoAtual);
-        
-        tabuleiro.verificarCasaEspecial(this);
-    }
-
 }

@@ -13,6 +13,10 @@ public class CasaSorte extends Casas {
             PopupManager.showInformationPopup("Casa da Sorte",
                     jogador.getNomeJogador() + " esta com sorte e avançou 3 casas! Agora está na casa " + jogador.getPosicaoAtual());
         }
+        else{
+            PopupManager.showInformationPopup("Casa da Sorte",
+                    jogador.getNomeJogador() + " Como voce esta com azar voce nao avança as 3 casas! ");
+        }
     }
 
 }

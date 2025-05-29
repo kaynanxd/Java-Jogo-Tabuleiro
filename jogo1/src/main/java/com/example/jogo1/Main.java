@@ -103,8 +103,7 @@ public class Main extends Application {
         HBox containerBotoes = new HBox(20, btnJogar, btnCreditos, btnOpcoes, btnSair); // Organiza os botões horizontalmente com espaçamento e centraliza
         containerBotoes.setAlignment(Pos.CENTER);
             // Cria a janela do menu principal
-        primaryStage.setScene(new Scene(
-                criarLayoutPadrao("Corrida No Tabuleiro", containerBotoes), 700, 400));
+        primaryStage.setScene(new Scene(criarLayoutPadrao("Corrida No Tabuleiro", containerBotoes), 700, 400));
         primaryStage.setTitle("Menu Principal");
     }
 

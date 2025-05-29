@@ -43,7 +43,6 @@ public class Dados {
             case NORMAL:
                 int tentativas = 0;
                 do {
-
                     dado1 = random.nextInt(6) + 1;
                     dado2 = random.nextInt(6) + 1;
                     somaDados = dado1 + dado2;
@@ -57,7 +56,6 @@ public class Dados {
                     } else if (tipoJogador.equals("Azarado")) {
                         condicaoSatisfeita = (somaDados <= 6);
                     }
-
                     if (condicaoSatisfeita) {
                         break;
                     }
