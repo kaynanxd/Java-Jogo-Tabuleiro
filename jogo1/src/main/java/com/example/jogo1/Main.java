@@ -60,28 +60,23 @@ public class Main extends Application {
     }
 
     public void ReiniciarJogo() {   //Limpa todos os dados do jogo anterior para poder reiniciar
-        musica.parar();
-        jogadores.clear();
+        musicaReiniciar();
+		jogadores.clear();
         coresUsadas.clear();
         corSelecionadaAtual = null;
-        musica = new Musica("src/audios/musica.mp3");
-        exibirTelaSplash();
     }
+
+	private void musicaReiniciar() {
+		musica.parar();
+		musica = new Musica("src/audios/musica.mp3");
+		exibirTelaSplash();
+	}
 
     private void exibirTelaSplash() {
         musica.tocar();
-        Image imagemSplash = new Image("file:src/imagens/Splashart.png");
-        ImageView visualizadorImagem = new ImageView(imagemSplash);
-        visualizadorImagem.setFitWidth(800);
-        visualizadorImagem.setFitHeight(600);
-        visualizadorImagem.setPreserveRatio(false);
-
-        Label mensagem = new Label("Pressione qualquer tecla para continuar");
-        mensagem.setFont(Font.font(FONTE_PADRAO, 16));
-        mensagem.setTextFill(Color.WHITE);
-        mensagem.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5); -fx-padding: 10;");
-
-        StackPane root = new StackPane(visualizadorImagem, mensagem);
+        ImageView visualizadorImagem = visualizadorImagemConfig();
+		Label mensagem = mensagemTelaInicial();
+		StackPane root = new StackPane(visualizadorImagem, mensagem);
         StackPane.setAlignment(mensagem, Pos.BOTTOM_CENTER);
 
         Scene cenaSplash = new Scene(root, 800, 600);
@@ -94,18 +89,42 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    private void exibirMenuPrincipal() {
-        Button btnJogar = criarBotaoPadronizado("Jogar", "src/imagens/dice.png", Color.MEDIUMSEAGREEN, this::exibirSelecionarJogadores);
-        Button btnCreditos = criarBotaoPadronizado("Créditos", "src/imagens/code.png", Color.MEDIUMSEAGREEN, this::exibirCreditos);
-        Button btnSair = criarBotaoPadronizado("Sair", "src/imagens/exit.png", Color.SALMON, () -> System.exit(0));
-        Button btnOpcoes = criarBotaoPadronizado("Opções", "src/imagens/options.png", Color.MEDIUMSEAGREEN, this::exibirOpcoes);
+	private Label mensagemTelaInicial() {
+		Label mensagem = new Label("Pressione qualquer tecla para continuar");
+		mensagem.setFont(Font.font(FONTE_PADRAO, 16));
+		mensagem.setTextFill(Color.WHITE);
+		mensagem.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5); -fx-padding: 10;");
+		return mensagem;
+	}
 
-        HBox containerBotoes = new HBox(20, btnJogar, btnCreditos, btnOpcoes, btnSair); // Organiza os botões horizontalmente com espaçamento e centraliza
-        containerBotoes.setAlignment(Pos.CENTER);
-            // Cria a janela do menu principal
+	private ImageView visualizadorImagemConfig() {
+		Image imagemSplash = new Image("file:src/imagens/Splashart.png");
+		ImageView visualizadorImagem = new ImageView(imagemSplash);
+		visualizadorImagem.setFitWidth(800);
+		visualizadorImagem.setFitHeight(600);
+		visualizadorImagem.setPreserveRatio(false);
+		return visualizadorImagem;
+	}
+
+    private void exibirMenuPrincipal() {
+        HBox containerBotoes = containerBotoes();
+		// Cria a janela do menu principal
         primaryStage.setScene(new Scene(criarLayoutPadrao("Corrida No Tabuleiro", containerBotoes), 700, 400));
         primaryStage.setTitle("Menu Principal");
     }
+
+	private HBox containerBotoes() {
+		Button btnJogar = criarBotaoPadronizado("Jogar", "src/imagens/dice.png", Color.MEDIUMSEAGREEN,
+				this::exibirSelecionarJogadores);
+		Button btnCreditos = criarBotaoPadronizado("Créditos", "src/imagens/code.png", Color.MEDIUMSEAGREEN,
+				this::exibirCreditos);
+		Button btnSair = criarBotaoPadronizado("Sair", "src/imagens/exit.png", Color.SALMON, () -> System.exit(0));
+		Button btnOpcoes = criarBotaoPadronizado("Opções", "src/imagens/options.png", Color.MEDIUMSEAGREEN,
+				this::exibirOpcoes);
+		HBox containerBotoes = new HBox(20, btnJogar, btnCreditos, btnOpcoes, btnSair);
+		containerBotoes.setAlignment(Pos.CENTER);
+		return containerBotoes;
+	}
 
     private VBox criarLayoutPadrao(String tituloTexto, Node... conteudo) {
         Label titulo = new Label(tituloTexto);
@@ -132,40 +151,40 @@ public class Main extends Application {
     private void exibirSelecionarJogadores() {
              //cria uma lista para armazenar os botoes e cria eles
         List<Button> botoes = new ArrayList<>();
-        for (int i = 2; i <= 6; i++) {
-            int numJogadores = i;
-            Button btn = criarBotaoPadronizado(i + " jogadores", "src/imagens/player.png", Color.MEDIUMSEAGREEN, () -> {
-                        numeroJogadoresSelecionado = numJogadores;
-                        mostrarFormularioJogador(1);  //metodo onde sera mostrado a interface do formulario
-                    });
-            botoes.add(btn); //adiciona o botao a lista
-        }
-        Button btnVoltar = criarBotaoPadronizado("Voltar", "src/imagens/back.png", Color.DARKSEAGREEN, this::exibirMenuPrincipal);
-        Button btnDebug = criarBotaoComIcone("Debug OFF", "src/imagens/debug.png", Color.SALMON);
-        btnDebug.setOnAction(criarAcaoComSom(() -> alternarModoDebug(btnDebug)));  //chama metodo para ativar e desativar modo debug
-
-        // define que a linha 1 tera 4 botoes e a linha 2 tem
-        HBox linha1 = new HBox(20, botoes.get(0), botoes.get(1), botoes.get(2), botoes.get(3));
-        HBox linha2 = new HBox(20, botoes.get(4), btnDebug, btnVoltar);
-        linha1.setAlignment(Pos.CENTER);
-        linha2.setAlignment(Pos.CENTER);
-
-        primaryStage.setScene(new Scene(
-                criarLayoutPadrao("Selecionar número de jogadores", linha1, linha2), 700, 500));
+        criarBotoesSelecaoJogadores(botoes);
     }
+
+	private void criarBotoesSelecaoJogadores(List<Button> botoes) {
+		for (int i = 2; i <= 6; i++) {
+			int numJogadores = i;
+			Button btn = criarBotaoPadronizado(i + " jogadores", "src/imagens/player.png", Color.MEDIUMSEAGREEN, () -> {
+				numeroJogadoresSelecionado = numJogadores;
+				mostrarFormularioJogador(1);
+			});
+			botoes.add(btn);
+		}
+		HBox linha2 = linhas(botoes);
+		HBox linha1 = new HBox(20, botoes.get(0), botoes.get(1), botoes.get(2), botoes.get(3));
+		linha1.setAlignment(Pos.CENTER);
+		primaryStage.setScene(new Scene(criarLayoutPadrao("Selecionar número de jogadores", linha1, linha2), 700, 500));
+	}
+
+	private HBox linhas(List<Button> botoes) {
+		Button btnVoltar = criarBotaoPadronizado("Voltar", "src/imagens/back.png", Color.DARKSEAGREEN,
+				this::exibirMenuPrincipal);
+		Button btnDebug = criarBotaoComIcone("Debug OFF", "src/imagens/debug.png", Color.SALMON);
+		btnDebug.setOnAction(criarAcaoComSom(() -> alternarModoDebug(btnDebug)));
+		HBox linha2 = new HBox(20, botoes.get(4), btnDebug, btnVoltar);
+		linha2.setAlignment(Pos.CENTER);
+		return linha2;
+	}
 
     private void mostrarFormularioJogador(int indiceAtual) {
         Pane root = new Pane();
         root.setStyle("-fx-background-color: #c2ffd2;");
 
-        // Cria um container principal na cor azul
-        StackPane containerPrincipal = new StackPane();
-        containerPrincipal.setStyle("-fx-background-color: #6699FF; -fx-background-radius: 15;");
-        containerPrincipal.setPrefSize(600, 400);
-        containerPrincipal.setLayoutX(100);
-        containerPrincipal.setLayoutY(50);
-
-        // Cria um layout horizontal para dividir a tela
+        StackPane containerPrincipal = containerPrincipal();
+		// Cria um layout horizontal para dividir a tela
         HBox conteudoPrincipal = new HBox(20);
         conteudoPrincipal.setAlignment(Pos.CENTER);
         conteudoPrincipal.setPadding(new Insets(20));
@@ -216,8 +235,18 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+	private StackPane containerPrincipal() {
+		StackPane containerPrincipal = new StackPane();
+		containerPrincipal.setStyle("-fx-background-color: #6699FF; -fx-background-radius: 15;");
+		containerPrincipal.setPrefSize(600, 400);
+		containerPrincipal.setLayoutX(100);
+		containerPrincipal.setLayoutY(50);
+		return containerPrincipal;
+	}
+
     private void processarFormulario(Stage stage, int indiceAtual, TextField campoNome, HBox seletorTipo) {
-        String nome = campoNome.getText().trim();
+        Jogador jogador = Processarjogador(campoNome, seletorTipo);
+		String nome = campoNome.getText().trim();
         String tipo = "Normal";
         for (Node node : seletorTipo.getChildren()) {
             if (node instanceof RadioButton) {
@@ -237,18 +266,14 @@ public class Main extends Application {
             return;
         }
         coresUsadas.add(corSelecionadaAtual);
-        Jogador jogador = new Jogador(nome, tipo, null);
-        jogador.setCor(corSelecionadaAtual);
         jogadores.add(jogador);
 
         if (indiceAtual < numeroJogadoresSelecionado) {
-            // Continua para o próximo jogador
-            mostrarFormularioJogador(indiceAtual + 1);
+            primaryStage(indiceAtual);
         } else {
-            // Verifica se há pelo menos 2 tipos diferentes de jogadores
+            criarStage(stage);
+			// Verifica se há pelo menos 2 tipos diferentes de jogadores
             if (temTiposDiferentesSuficientes()) {
-                JogoTabuleiro jogo = new JogoTabuleiro(jogadores, dados.getModoJogo(), this, primaryStage);
-                jogo.start(stage);
             } else {
                 // Remove o último jogador adicionado para corrigir
                 jogadores.remove(jogadores.size() - 1);
@@ -258,8 +283,41 @@ public class Main extends Application {
                         "Selecione pelo menos 2 tipos diferentes de jogadores (Normal, Sortudo e/ou Azarado).\n" + "Atualmente todos os jogadores são do mesmo tipo: " + tipo).show();
             }
         }
-        musica.tocarEfeito(AUDIO_CLIQUE);
     }
+
+	private Jogador Processarjogador(TextField campoNome, HBox seletorTipo) {
+		String nome = campoNome.getText().trim();
+		String tipo = "Normal";
+		for (Node node : seletorTipo.getChildren()) {
+			if (node instanceof RadioButton) {
+				RadioButton radio = (RadioButton) node;
+				if (radio.isSelected()) {
+					tipo = radio.getUserData().toString();
+					break;
+				}
+			}
+		}
+		Jogador jogador = new Jogador(nome, tipo, null);
+		jogador.setCor(corSelecionadaAtual);
+		return jogador;
+	}
+
+	private void criarStage(Stage stage) {
+		if (temTiposDiferentesSuficientes()) {
+			gerenciarStage(stage);
+		} else {
+		}
+	}
+
+	private void gerenciarStage(Stage stage) {
+		JogoTabuleiro jogo = new JogoTabuleiro(jogadores, dados.getModoJogo(), this, primaryStage);
+		jogo.start(stage);
+	}
+
+	private void primaryStage(int indiceAtual) {
+		mostrarFormularioJogador(indiceAtual + 1);
+		musica.tocarEfeito(AUDIO_CLIQUE);
+	}
     private boolean temTiposDiferentesSuficientes() {
         String primeiroTipo = jogadores.get(0).getTipoJogador();
         // Verifica se existe algum jogador com tipo diferente
@@ -274,15 +332,8 @@ public class Main extends Application {
     private HBox criarSeletorCores(ImageView visualizadorImagem) {
         HBox container = new HBox(10);
         botoesCores = new Button[CORES_DISPONIVEIS.length];  //inicializa array com os botao com a quantidade de cores disponiveis
-        //Encontra a primeira cor disponível
-        Color primeiraCorDisponivel = null;
-        for (Color cor : CORES_DISPONIVEIS) {
-            if (!coresUsadas.contains(cor)) { //verifica se a cor ja foi usada
-                primeiraCorDisponivel = cor;
-                break;
-            }
-        }
-        // seta a primeira cor para carregar a imagem
+        Color primeiraCorDisponivel = primeiraCorDisponivel();
+		// seta a primeira cor para carregar a imagem
         if (primeiraCorDisponivel != null) {
             corSelecionadaAtual = primeiraCorDisponivel;
             carregarImagemAvatar(visualizadorImagem, primeiraCorDisponivel);
@@ -311,6 +362,17 @@ public class Main extends Application {
         }
         return container;
     }
+
+	private Color primeiraCorDisponivel() {
+		Color primeiraCorDisponivel = null;
+		for (Color cor : CORES_DISPONIVEIS) {
+			if (!coresUsadas.contains(cor)) {
+				primeiraCorDisponivel = cor;
+				break;
+			}
+		}
+		return primeiraCorDisponivel;
+	}
 
     private void selecionarCor(Color cor, ImageView visualizadorImagem, String estiloSelecionado) {
         musica.tocarEfeito(AUDIO_CLIQUE);
@@ -356,32 +418,37 @@ public class Main extends Application {
     }
 
     private void exibirCreditos() {
-        Button btnDev1 = criarBotaoComIcone("KaynanSantos", "src/imagens/player2.png", Color.MEDIUMSEAGREEN);
-        Button btnDev2 = criarBotaoComIcone("Ana Beatriz", "src/imagens/player2.png", Color.MEDIUMSEAGREEN);
-        Button btnDev3 = criarBotaoComIcone("Luis Felipe", "src/imagens/player2.png", Color.MEDIUMSEAGREEN);
-        Button btnVoltar = criarBotaoComIcone("Voltar", "src/imagens/back.png", Color.DARKSEAGREEN);
-        btnVoltar.setOnAction(criarAcaoComSom(this::exibirMenuPrincipal)); //manda de volta pra menuprincipal
-
-        HBox botoes = new HBox(20, btnDev1, btnDev2, btnDev3, btnVoltar); //coloca os botoes em uma linha com espacamento 20
-        botoes.setAlignment(Pos.CENTER);
-
-        primaryStage.setScene(new Scene(
+        HBox botoes = botoesDesenvolvedores();
+		primaryStage.setScene(new Scene(
                 criarLayoutPadrao("Créditos", botoes), 700, 400));
     }
 
+	private HBox botoesDesenvolvedores() {
+		Button btnDev1 = criarBotaoComIcone("KaynanSantos", "src/imagens/player2.png", Color.MEDIUMSEAGREEN);
+		Button btnDev2 = criarBotaoComIcone("Ana Beatriz", "src/imagens/player2.png", Color.MEDIUMSEAGREEN);
+		Button btnDev3 = criarBotaoComIcone("Luis Felipe", "src/imagens/player2.png", Color.MEDIUMSEAGREEN);
+		Button btnVoltar = criarBotaoComIcone("Voltar", "src/imagens/back.png", Color.DARKSEAGREEN);
+		btnVoltar.setOnAction(criarAcaoComSom(this::exibirMenuPrincipal));
+		HBox botoes = new HBox(20, btnDev1, btnDev2, btnDev3, btnVoltar);
+		botoes.setAlignment(Pos.CENTER);
+		return botoes;
+	}
+
     private void exibirOpcoes() {
-        Button btnMusica = criarBotaoComIcone("Parar Música", "src/imagens/music.png", Color.GREEN);
-        Button btnVoltar = criarBotaoComIcone("Voltar", "src/imagens/back.png", Color.DARKSEAGREEN);
-
-        btnMusica.setOnAction(criarAcaoComSom(() -> alternarMusica(btnMusica)));
-        btnVoltar.setOnAction(criarAcaoComSom(this::exibirMenuPrincipal));
-
-        HBox botoes = new HBox(20, btnMusica, btnVoltar);
-        botoes.setAlignment(Pos.CENTER);
-
-        primaryStage.setScene(new Scene(
+        HBox botoes = botoesOpcoes();
+		primaryStage.setScene(new Scene(
                 criarLayoutPadrao("Opções", botoes), 700, 400));
     }
+
+	private HBox botoesOpcoes() {
+		Button btnMusica = criarBotaoComIcone("Parar Música", "src/imagens/music.png", Color.GREEN);
+		Button btnVoltar = criarBotaoComIcone("Voltar", "src/imagens/back.png", Color.DARKSEAGREEN);
+		btnMusica.setOnAction(criarAcaoComSom(() -> musica.alternarMusica(btnMusica)));
+		btnVoltar.setOnAction(criarAcaoComSom(this::exibirMenuPrincipal));
+		HBox botoes = new HBox(20, btnMusica, btnVoltar);
+		botoes.setAlignment(Pos.CENTER);
+		return botoes;
+	}
 
     private void alternarModoDebug(Button btnDebug) {
         if (dados.getModoJogo() == Dados.ModoJogo.DEBUG) { //muda para modo normal do debug
@@ -395,15 +462,6 @@ public class Main extends Application {
         }
     }
 
-    private void alternarMusica(Button botao) {
-        if (musica.isMusicaTocando()) {  //se musica tiver tocando ela para
-            musica.parar();
-            botao.setStyle("-fx-background-radius: 20; -fx-background-color: red;");
-        } else {   //dar play na musica
-            musica.tocar();
-            botao.setStyle("-fx-background-radius: 20; -fx-background-color: green;");
-        }
-    }
     //Cria um Evento que toca efeito sonoro antes de executar a ação
     private EventHandler<ActionEvent> criarAcaoComSom(Runnable acao) {
         return e -> {

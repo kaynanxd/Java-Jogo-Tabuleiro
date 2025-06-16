@@ -4,9 +4,8 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Dados {
-    protected int dado1 = 0, dado2 = 0, somaDados = 0;
-    protected ModoJogo modoJogo;
-    private Scanner sc;
+    private DadosProduct dadosProduct = new DadosProduct();
+	protected int dado1 = 0, dado2 = 0, somaDados = 0;
     private Random random;
 
     public enum ModoJogo {
@@ -18,58 +17,31 @@ public class Dados {
     }
 
     public Dados(ModoJogo modo) {
-        this.modoJogo = modo;
+        dadosProduct.setModoJogo2(modo);
         this.random = new Random();
         if (modo == ModoJogo.DEBUG) {
-            this.sc = new Scanner(System.in);
+            dadosProduct.setSc(new Scanner(System.in));
         }
     }
 
     public ModoJogo getModoJogo() {
-        return modoJogo;
+        return dadosProduct.getModoJogo();
     }
 
     public void setModoJogo(ModoJogo modo) {
-        this.modoJogo = modo;
-        if (modo == ModoJogo.DEBUG && sc == null) {
-            this.sc = new Scanner(System.in);
-        }
+        dadosProduct.setModoJogo(modo);
     }
 
-    public void rolarDados(String tipoJogador) {
-
-
-        switch (modoJogo) {
-            case NORMAL:
-                int tentativas = 0;
-                do {
-                    dado1 = random.nextInt(6) + 1;
-                    dado2 = random.nextInt(6) + 1;
-                    somaDados = dado1 + dado2;
-                    tentativas++;
-
-                    // Verifica condições especiais do jogador
-                    boolean condicaoSatisfeita = true;
-
-                    if (tipoJogador.equals("Sortudo")) {
-                        condicaoSatisfeita = (somaDados >= 7);
-                    } else if (tipoJogador.equals("Azarado")) {
-                        condicaoSatisfeita = (somaDados <= 6);
-                    }
-                    if (condicaoSatisfeita) {
-                        break;
-                    }
-                } while (true);
-                break;
-
-            case DEBUG:
-
-                System.out.println("Modo DEBUG ativado. Insira os valores dos dados:");
-                dado1 = sc.nextInt();
-                dado2 = sc.nextInt();
-                somaDados = dado1 + dado2;
-                break;
-        }
+    public void rolarDados() {
+    	dado1 = random.nextInt(6) + 1;
+        dado2 = random.nextInt(6) + 1;
+        somaDados = dado1 + dado2;          
+    }
+    
+    public void setDadosDebug(int d1, int d2) {
+        this.dado1 = d1;
+        this.dado2 = d2;
+        this.somaDados = d1 + d2;
     }
 
     public int getSomaDados() {
