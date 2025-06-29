@@ -10,7 +10,6 @@ import java.util.Optional;
 
 public class PopupManager {
 
-    // Métodos com ícone opcional (sobrecarga)
     public static void showInformationPopup(String title, String content) {
         showInformationPopup(title, content, null);
     }
