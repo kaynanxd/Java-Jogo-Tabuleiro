@@ -52,7 +52,7 @@ public class Main extends Application {
         launch(args);
     }
 
-    //@Override Metodo que inicia a interface grafica e musica
+    // Metodo que inicia a interface grafica e musica
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.musica = new Musica("src/audios/musica.mp3");
