@@ -1,4 +1,4 @@
-// MarcadorFactory.java (NOVO ARQUIVO)
+
 package com.example.jogo1;
 
 import javafx.scene.control.Label;
