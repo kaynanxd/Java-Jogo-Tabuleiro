@@ -1,4 +1,4 @@
-// JogoTabuleiro.java
+
 package com.example.jogo1;
 
 import javafx.animation.KeyFrame;
@@ -29,8 +29,7 @@ public class JogoTabuleiro {
     private static final String AUDIO_APLAUSOS = "src/audios/aplausos.mp3";
     private final MarcadorFactory marcadorFactory = new MarcadorFactory();
 
-    // Agora o campo 'modoJogo' será inicializado no construtor
-    private final ModoJogo modoJogo; // Era o erro "blank final field may not have been initialized"
+    private final ModoJogo modoJogo; 
     private final Musica musica;
     private final Tabuleiro tabuleiro;
     private final GridPane grid = new GridPane();
@@ -45,17 +44,15 @@ public class JogoTabuleiro {
         this.musica = new Musica(AUDIO_CLIQUE);
         this.tabuleiro = new Tabuleiro(jogadores);
 
-        // Inicializa 'modoJogo' diretamente no construtor
         if (modoJogoEnum == Dados.ModoJogo.DEBUG) {
             this.modoJogo = new Debug();
         } else {
-            this.modoJogo = new ModoNormal(); // Usa a nova classe ModoNormal
+            this.modoJogo = new ModoNormal();
         }
         this.mainApp = main;
 
         for (Jogador jogador : jogadores) {
             jogador.tabuleiro = tabuleiro;
-            // Passe o modoJogoEnum para o construtor de Dados, garantindo que Dados saiba qual modo operar
             jogador.dados = new Dados(modoJogoEnum);
         }
     }
@@ -365,19 +362,6 @@ public class JogoTabuleiro {
 		}
 		return estatisticas;
 	}
-
-    // O método setModoJogo na classe JogoTabuleiro pode ser removido,
-    // já que o modo é definido no construtor e o campo 'modoJogo' é final.
-    // Se você precisar mudar o modo em tempo de execução, 'modoJogo' não poderia ser final,
-    // mas a estrutura atual sugere que ele é definido uma vez.
-    /*
-    public void setModoJogo(Dados.ModoJogo modoJogo) {
-        if (modoJogo == Dados.ModoJogo.DEBUG)
-            this.modoJogo = new Debug();
-        else
-            this.modoJogo = new ModoNormal();
-    }
-    */
 
     public Dados.ModoJogo getModoJogo() {
         return modoJogo.getModoJogo();
