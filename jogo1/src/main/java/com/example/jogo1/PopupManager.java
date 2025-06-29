@@ -30,7 +30,6 @@ public class PopupManager {
         return showTextInputPopup(title, header, defaultValue, null);
     }
 
-    // Métodos originais com parâmetro de ícone
     public static void showInformationPopup(String title, String content, String iconPath) {
         Platform.runLater(() -> {
             Alert alert = createStyledAlert(Alert.AlertType.INFORMATION, title, content, iconPath);
@@ -70,12 +69,10 @@ public class PopupManager {
     }
 
     private static void styleDialog(DialogPane dialogPane, String title, String content, String iconPath) {
-        // Configuração básica
         dialogPane.setHeaderText(title);
         dialogPane.setContentText(content);
         dialogPane.setMinSize(400, 250);
 
-        // Estilo CSS
         String css = """
             .dialog-pane {
                 -fx-background-color: #6699FF;
