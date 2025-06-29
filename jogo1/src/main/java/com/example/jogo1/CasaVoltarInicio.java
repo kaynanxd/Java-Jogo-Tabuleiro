@@ -14,7 +14,6 @@ public class CasaVoltarInicio extends Casas {
     }
 
     public void acao(Jogador jogador, List<Jogador> jogadores) {
-        // Prepara as opções para o popup
         List<String> opcoes = new ArrayList<>();
         for (int i = 0; i < jogadores.size(); i++) {
             opcoes.add((i + 1) + ". " + jogadores.get(i).nomeJogador);
@@ -28,7 +27,6 @@ public class CasaVoltarInicio extends Casas {
             );
 
             escolha.ifPresent(sel -> {
-                // Processa a seleção
                 int index = Integer.parseInt(sel.substring(0, sel.indexOf("."))) - 1;
                 Jogador selecionado = jogadores.get(index);
                 selecionado.setPosicaoAtual(0);
