@@ -16,13 +16,13 @@ Um jogo de tabuleiro clássico onde a estratégia e a sorte caminham juntas. O o
 ### 📸 Galeria de fotos e Gameplay (Tabuleiro)
 > **💡 Dica:** Clique na primeira imagem para assistir à demonstração da lógica do jogo!
 
-| [![Vídeo de Gameplay](fotos/1.png)](https://youtu.be/u7A7JZmhXj8) |
+| [![Vídeo de Gameplay](screenshots/1.png)](https://youtu.be/u7A7JZmhXj8) |
 |:---:|
 | 🎬 *ASSISTIR DEMONSTRAÇÃO DO TABULEIRO* |
 
 | 🏫 *Visual do Tabuleiro* | 🏖️ *Evento de Vantagem* | 🏐 *Vencedor* |
 |:---:|:---:|:---:|
-| ![Tabuleiro](fotos/2.png) | ![Vantagem](fotos/3.png) | ![Vitoria](fotos/9.png) |
+| ![Tabuleiro](screenshots/2.png) | ![Vantagem](screenshots/3.png) | ![Vitoria](screenshots/4.png) |
 
 ---
 
@@ -36,20 +36,15 @@ Um jogo de simulação e controle em uma malha quadriculada, onde o objetivo é 
 3.  **Modo Customizado:** Permite ao usuário posicionar obstáculos na malha para criar novos desafios.
 
 
-| [![Vídeo de Gameplay](fotos/1.png)](https://youtu.be/hzUQ-_-aalw) |
+| [![Vídeo de Gameplay](screenshots/5.png)](https://youtu.be/hzUQ-_-aalw) |
 |:---:|
 | 🎬 *ASSISTIR DEMONSTRAÇÃO DO TABULEIRO* |
 
 ### 📸 Galeria de fotos e Gameplay (Robôs)
 | *🌆 Malha Quadriculada* | *🥥 Robô vs Alimento* | *🏐 Obstáculos Customizados* |
 |:---:|:---:|:---:|
-| ![Malha](fotos/4.png) | ![Objetivo](fotos/5.png) | ![Customizacao](fotos/6.png) |
+| ![Malha](screenshots/6.png) | ![Objetivo](screenshots/7.png) | ![Customizacao](screenshots/8.png) |
 
-| *📈 Atributos da IA* | *📚 Lógica do Algoritmo* | *🏁 Simulação* |
-|:---:|:---:|:---:|
-| ![Status](fotos/7.png) | ![Logica](fotos/8.png) | ![Simulacao](fotos/10.png) |
-
----
 
 ## 📚 Conceitos de POO Aplicados
 
