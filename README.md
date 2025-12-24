@@ -16,7 +16,7 @@ Um jogo de tabuleiro clássico onde a estratégia e a sorte caminham juntas. O o
 ### 📸 Galeria de fotos e Gameplay (Tabuleiro)
 > **💡 Dica:** Clique na primeira imagem para assistir à demonstração da lógica do jogo!
 
-| [![Vídeo de Gameplay](fotos/1.png)](https://www.youtube.com/watch?v=C_zlEM7erig) |
+| [![Vídeo de Gameplay](fotos/1.png)](https://youtu.be/u7A7JZmhXj8) |
 |:---:|
 | 🎬 *ASSISTIR DEMONSTRAÇÃO DO TABULEIRO* |
 
@@ -34,6 +34,11 @@ Um jogo de simulação e controle em uma malha quadriculada, onde o objetivo é 
 1.  **Modo Manual:** Você assume o controle total do robô e deve traçar o caminho até o objetivo.
 2.  **Modo IA (Inteligência Artificial):** O robô é controlado por um algoritmo que busca autonomamente o caminho mais eficiente até o alimento.
 3.  **Modo Customizado:** Permite ao usuário posicionar obstáculos na malha para criar novos desafios.
+
+
+| [![Vídeo de Gameplay](fotos/1.png)](https://youtu.be/hzUQ-_-aalw) |
+|:---:|
+| 🎬 *ASSISTIR DEMONSTRAÇÃO DO TABULEIRO* |
 
 ### 📸 Galeria de fotos e Gameplay (Robôs)
 | *🌆 Malha Quadriculada* | *🥥 Robô vs Alimento* | *🏐 Obstáculos Customizados* |
