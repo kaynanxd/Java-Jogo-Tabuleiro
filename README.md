@@ -43,7 +43,7 @@ Um jogo de simulação e controle em uma malha quadriculada, onde o objetivo é 
 ### 📸 Galeria de fotos e Gameplay (Robôs)
 | *🌆 Malha Quadriculada* | *🥥 Robô vs Alimento* | *🏐 Obstáculos Customizados* |
 |:---:|:---:|:---:|
-| ![Malha](screenshots/6.png) | ![Objetivo](screenshots/7.png) | ![Customizacao](screenshots/8.png) |
+| ![Malha](screenshots/7.png) | ![Objetivo](screenshots/8.png) | ![Customizacao](screenshots/9.png) |
 
 
 ## 📚 Conceitos de POO Aplicados
